@@ -18,26 +18,20 @@ def transform(templates, time_series, scaling):
         s, ret_R, ret_t = kabsch.rigid_transform_3D(np.matrix(template),np.matrix(window), scaling)
         num_rows_to_copy = template.shape[0] // 2
         result = np.dot(window,ret_R)
-        
         transformed_timeserie[:num_rows_to_copy, :] = result[:num_rows_to_copy, :]
 
-        print("timeseries: " + str(time_series.shape))
-        print("template: " + str(template.shape))
+        print("template: " +str(t+1) + " with shape: " + str(template.shape))
         print("start: " + str(num_rows_to_copy) + "  end: " + str(time_series_length-template_length))
+        
         #Slide the window for all of the middle values
-        for w in range(num_rows_to_copy,time_series_length- template_length):
+        for w in range(0,time_series_length-template_length):
             window = time_series[w:w+template_length]
             s, ret_R, ret_t = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), scaling)
             result = np.dot(window,ret_R)
             index =w+num_rows_to_copy
-            transformed_timeserie[:index, :] = result[template_length//2]
-
-        #Take the last couple of values at once instead of sliding the window
-        window = time_series[time_series_length-template_length:time_series_length]
-        s, ret_R, ret_t = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), scaling)
-        result = np.dot(window,ret_R)
+            transformed_timeserie[index] = result[template_length//2]
+        
         transformed_timeserie[-num_rows_to_copy:, :] = result[-template_length//2:]
-
         time_series_transformed.append(transformed_timeserie)
 
     #Check whetever a value in the array has not been set
@@ -45,7 +39,7 @@ def transform(templates, time_series, scaling):
         contains_nann = np.isnan(time_series_transformed[i]).any()
         contains_none = any(item is None for item in time_series_transformed[i])
         contains_empty = contains_nann or contains_none
-        print(contains_empty)
+        print("Does the transformed series contain empty values: " +  str(contains_empty))
         print(time_series_transformed[i].shape)
     
     return time_series_transformed

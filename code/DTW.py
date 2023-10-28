@@ -28,7 +28,6 @@ def segment(templates, time_series, min_path_length, max_iterations, max_iterati
             fig = plt.figure(t)
             query = templates[t]
             serie = time_series[t]
-            
             sa = subsequence_alignment(query, serie,use_c=True)
             match = sa.best_match()
             
@@ -41,7 +40,7 @@ def segment(templates, time_series, min_path_length, max_iterations, max_iterati
                 
             matches.append(match)
             dtwvis.plot_warpingpaths(query, serie, sa.warping_paths(), match.path, figure=fig,showlegend=True)
-            #plt.show()
+            plt.show()
             plt.close('all')
             
         if best_match_index==None:
