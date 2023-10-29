@@ -26,7 +26,7 @@ for i in range(0,3):
     templates[i] = templates[i][:, 1:]
     
 # Save the array to a CSV file
-with open('transformed_series.csv', 'w', newline='') as file:
+with open('transformed_series_kabsch_numbered.csv', 'w', newline='') as file:
     writer = csv.writer(file)
     for plane in transformed_series:
         writer.writerows(plane)
