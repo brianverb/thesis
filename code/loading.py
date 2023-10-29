@@ -61,6 +61,30 @@ class Loading:
                     elif filename == 'template_session.txt':
                         data = np.genfromtxt(file_path, delimiter=';', skip_header=1, usecols=(1, 2, 3))
                         self.time_series[su_id-1,ex_id-1,se_id-1, 0] = self.split_template_data(template_times, data)
+    
+    def load_all_id(self):
+        """
+        Sets `self.time_series` to have a list of subjects that each have a list of exercises that each have a list of sensors that each have their templates and test time series.
+
+        `self.time_series: list[subject_type]`.
+        """
+        template_times = None
+        for dirpath, dirnames, filenames in os.walk(self.home_folder, topdown=True):
+            for filename in filenames:
+                file_path = os.path.join(dirpath, filename)
+                if filename == 'annotations.csv':
+                    su_id, ex_id = list(map(lambda str_val: int(str_val[1]), dirpath.split('\\')[2:]))
+                    self.annotated.append({"id":f"s{su_id}:e{ex_id}", "data":self.get_time_stamps(file_path)})
+                elif filename == 'template_times.txt':
+                    template_times = np.genfromtxt(file_path, delimiter=';', skip_header=1, usecols=(1, 2))
+                elif filename in ['test.txt', 'template_session.txt']:
+                    su_id, ex_id, se_id = list(map(lambda str_val: int(str_val[1]), dirpath.split('\\')[2:]))
+                    if filename == 'test.txt':
+                        data = np.genfromtxt(file_path, delimiter=';', skip_header=1, usecols=(0,1, 2, 3))
+                        self.time_series[su_id-1,ex_id-1,se_id-1, 1] = data
+                    elif filename == 'template_session.txt':
+                        data = np.genfromtxt(file_path, delimiter=';', skip_header=1, usecols=(0,1, 2, 3))
+                        self.time_series[su_id-1,ex_id-1,se_id-1, 0] = self.split_template_data(template_times, data)
                         
     def get_sensors_for_exercises_for_subjects(self, sensors: list[float], exercises: list[float], subjects: list[float] ) -> list[subject_type]:
         """

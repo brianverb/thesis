@@ -11,13 +11,14 @@ def transform(templates, time_series, scaling):
         template = templates[t]
         template_length = len(template)
 
-        transformed_timeserie = np.empty((5910, 3))  
+        transformed_timeserie = np.empty(time_series.shape)  
         #Take the first couple of values at once instead of sliding the window
         window = time_series[0:template_length]
 
         s, ret_R, ret_t = kabsch.rigid_transform_3D(np.matrix(template),np.matrix(window), scaling)
         num_rows_to_copy = template.shape[0] // 2
         result = np.dot(window,ret_R)
+        
         transformed_timeserie[:num_rows_to_copy, :] = result[:num_rows_to_copy, :]
 
         print("template: " +str(t+1) + " with shape: " + str(template.shape))
