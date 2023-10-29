@@ -17,10 +17,14 @@ sensor = 0
 
 # get accelerometer data of first subject performing the second exercises using the second sensor
 templates, time_series = subjects[subject][exercise][sensor]
-git a
+
 #Use the kabsch algorithm to transform the timeseries to optimal rotated series based on the templates
 transformed_series = kabsch_time.transform(templates,time_series,scaling)
 
+for i in range(0,3):
+    transformed_series[i] = transformed_series[i][:, 1:]
+    templates[i] = templates[i][:, 1:]
+    
 # Save the array to a CSV file
 with open('transformed_series.csv', 'w', newline='') as file:
     writer = csv.writer(file)

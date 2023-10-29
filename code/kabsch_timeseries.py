@@ -4,7 +4,7 @@ import numpy as np
 
 def transform(templates, time_series, scaling):
     time_series_length = len(time_series)
-    time_series_transformed = []
+    time_series_transformed = [np.empty(time_series.shape) , np.empty(time_series.shape) ,np.empty(time_series.shape)]
 
     #For each template convert the timeseries using the kabsch algorithm
     for t in range(0,3):
@@ -33,7 +33,7 @@ def transform(templates, time_series, scaling):
             transformed_timeserie[index] = result[template_length//2]
         
         transformed_timeserie[-num_rows_to_copy:, :] = result[-template_length//2:]
-        time_series_transformed.append(transformed_timeserie)
+        time_series_transformed[t] = transformed_timeserie
 
     #Check whetever a value in the array has not been set
     for i in range (0,3):
