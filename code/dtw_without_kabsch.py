@@ -25,5 +25,6 @@ time_series_copies.append(time_series.copy())
 #Use DTW to recognize every occurence of an exercise
 (segmented_series, segmented_series_classification_indices) = dtw.segment(templates,time_series_copies,min_path_length =5,max_iterations=500, max_iterations_bad_match = 25)
 
+print("Amount of exercises found: " + str(len(segmented_series_classification_indices)))
 #Use the evaluation metrics to calculate the accuracy and confusion matrix
 #accuracies = eval(segmented_series, segmented_series_classification_indices, subject, exercise, sensor)
