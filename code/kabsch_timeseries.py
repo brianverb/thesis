@@ -40,7 +40,18 @@ def kabsch_transform_first_window(template, template_length, time_series, transf
 
 def kabsch_transform_sliding_window(template, template_length, time_series, time_series_length, transformed_timeserie, scaling):
     #Slide the window for all of the middle values
-    for w in range(0,time_series_length-template_length):
+    for w in range(0,time_series_length-template_length+1):
+        window = time_series[w:w+template_length]
+        _, ret_R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), scaling)
+        result = np.dot(window,ret_R)
+        index = w + template_length//2
+        transformed_timeserie[index] = result[template_length//2]
+    return result
+
+#TODO
+def kabsch_transform_sliding_window_with_ids(template, template_length, time_series, time_series_length, transformed_timeserie, scaling):
+    #Slide the window for all of the middle values
+    for w in range(0,time_series_length-template_length+1):
         window = time_series[w:w+template_length]
         _, ret_R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), scaling)
         result = np.dot(window,ret_R)
@@ -52,7 +63,7 @@ def kabsch_transform_last_window(template_length, previous_result, transformed_t
     if template_length // 2 == 0:
         transformed_timeserie[-template_length//2:, :] = previous_result[-template_length//2:]
     else: 
-        transformed_timeserie[-template_length//2+1:, :] = previous_result[-template_length//2:]
+        transformed_timeserie[-template_length//2+1:, :] = previous_result[-template_length//2+1:]
 
 def kabsch_check_transformed_series(time_series_transformed):
     #Check whetever a value in the array has not been set
@@ -60,7 +71,7 @@ def kabsch_check_transformed_series(time_series_transformed):
         contains_nann = np.isnan(time_series_transformed[i]).any()
         contains_none = any(item is None for item in time_series_transformed[i])
         contains_empty = contains_nann or contains_none
-        print("Does the transformed series contain empty values: " +  str(contains_empty))
+        print("Does timeseries " + str(i) +" have empty values: " +  str(contains_empty))
         print(time_series_transformed[i].shape)
         
 def transform(templates, time_series, scaling):
