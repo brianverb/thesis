@@ -27,8 +27,6 @@ with open('transformed_series.csv', 'w', newline='') as file:
     for plane in transformed_series:
         writer.writerows(plane)
 
-print(transformed_series[0])
-
 #Use DTW to recognize every occurence of an exercise
 (segmented_series, segmented_series_classification_indices) = dtw.segment(templates,transformed_series,min_path_length =5,max_iterations=500, max_iterations_bad_match = 25)
 

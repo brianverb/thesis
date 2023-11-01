@@ -4,14 +4,13 @@ from dtaidistance import dtw_visualisation as dtwvis
 from dtaidistance import dtw_ndim
 import numpy as np
 
+
 def get_path_indices_from_array(series, matching_path):
     matching_path_indexes = [row[1] for row in matching_path]
     matching_path = [series[i] for i in matching_path_indexes]
     matching_path = [list(tpl) for tpl in matching_path]
     matching_path = np.array(matching_path)
     return matching_path      
-
-
 
 def segment(templates, time_series, min_path_length, max_iterations, max_iterations_bad_match):
     iterations = 0
