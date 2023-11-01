@@ -11,9 +11,9 @@ l = loader.Loading("code\data")
 l.load_all()
 subjects = l.time_series
 scaling = False
-subject = 0
-exercise = 4
-sensor = 0
+subject = 2
+exercise = 0
+sensor = 1
 
 # get accelerometer data of first subject performing the second exercises using the second sensor
 templates, time_series = subjects[subject][exercise][sensor]

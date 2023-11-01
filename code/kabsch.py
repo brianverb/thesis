@@ -52,7 +52,6 @@ def rigid_transform_3D(A, B, scale):
     return c, R, t
 
 '''
-
 # Test
 A = np.matrix([[10.0,10.0,10.0],
                [20.0,10.0,10.0],
