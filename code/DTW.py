@@ -30,12 +30,9 @@ def segment(templates, time_series, min_path_length, max_iterations, max_iterati
             serie = time_series[t]
             sa = subsequence_alignment(query, serie,use_c=True)
             match = sa.best_match()
-            
-            matching_path = get_path_indices_from_array(series=serie,matching_path=match.path)
-            
-            distance = dtw_ndim.distance(query[:len(match.path)],matching_path)
-            if distance < best_match_distance:
-                best_match_distance = distance
+                                   
+            if sa.distance < best_match_distance:
+                best_match_distance = sa.distance
                 best_match_index = t
                 
             matches.append(match)
