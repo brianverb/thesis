@@ -21,8 +21,8 @@ class dtw_windowed:
                 if(k):
                     _, R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), self.scaling)
                     window = np.dot(window,R)
-                print(window.shape)
-                print(template.shape)
+                    window = np.array(window)
+
                 distance = dtw_ndim.distance(window, template)
                 self.matches.append((i,i+template_length,distance,t))
             print("Matching done for template: " + str(t+1))
