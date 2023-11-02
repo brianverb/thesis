@@ -3,7 +3,7 @@ import numpy as np
 from dtaidistance import dtw_ndim
 
 class dtw_windowed:
-    def __init__(self, series, templates, scaling=False, max_distance=25):
+    def __init__(self, series, templates, annotation_margin=0, scaling=False, max_distance=25):
         self.series = series
         self.series_length = len(series)
         self.templates = templates
@@ -11,7 +11,8 @@ class dtw_windowed:
         self.annotated_series = np.full((self.series_length,1), -1) 
         self.scaling = scaling
         self.max_distance = max_distance
-    
+        self.annotation_margin = annotation_margin
+        
     def find_matches(self, k=False, steps=1):
         for t in range(0,len(self.templates)):
             template = self.templates[t]
@@ -31,10 +32,17 @@ class dtw_windowed:
         self.matches = sorted(self.matches, key=lambda x: x[2])
     
     def annotate_series(self):
-         for (start, end, distance, label) in self.matches:
+        for (start, end, distance, label) in self.matches:
             if(distance <=self.max_distance):
-                for index in range(start,end+1):
+                length_of_segment = end-start
+                start_margined = start + int(length_of_segment*self.annotation_margin//2)
+                end_margined = end - int(length_of_segment*self.annotation_margin//2)
+
+                for index in range(start_margined,end_margined+1):
                     if(self.annotated_series[index] == -1):
                         self.annotated_series[index] = label
             else:
                 break
+
+
+        
