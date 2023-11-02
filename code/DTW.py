@@ -12,7 +12,7 @@ def get_path_indices_from_array(series, matching_path):
     matching_path = np.array(matching_path)
     return matching_path      
 
-def segment(templates, time_series, min_path_length, max_iterations, max_iterations_bad_match):
+def segment(templates, time_series, min_path_length, max_iterations, max_iterations_bad_match,margin=0):
     iterations = 0
     iterations_bad_match = 0
     best_match_distance = 0
@@ -55,13 +55,15 @@ def segment(templates, time_series, min_path_length, max_iterations, max_iterati
         s, e = matches[best_match_index].segment
         print("start of segment to match: " + str(s))
         print("end of segment to match: " + str(e))
+        s = int(s + (e-s)*margin//2)
+        e = int(e - (e-s)*margin//2)
         if(length_of_best_path > min_path_length):  
             print("the path length is: " + str(length_of_best_path) + " so the time series goes *100")
             iterations_bad_match = 0
             for i in range(s, e+1):
                 for s in range(0,3):
                     time_series[s][i] = (best_match_index+1)*100
-            time_series_segment_indexes.append((s,e,best_match_index+1))
+            time_series_segment_indexes.append((s,e,best_match_index))
                 
         else: 
             print("the path length is: " + str(length_of_best_path) + " so the time series goes *1000")
