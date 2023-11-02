@@ -12,26 +12,25 @@ def get_path_indices_from_array(series, matching_path):
     matching_path = np.array(matching_path)
     return matching_path      
 
-def segment(templates, time_series, min_path_length, max_iterations, max_iterations_bad_match,margin=0):
+def segment(templates, time_series, min_path_length, max_iterations, max_iterations_bad_match,margin=0, max_distance = 50):
     iterations = 0
     iterations_bad_match = 0
-    best_match_distance = 0
-    condition = best_match_distance < max_iterations and iterations < max_iterations and iterations_bad_match < max_iterations_bad_match
+    condition = iterations < max_iterations and iterations_bad_match < max_iterations_bad_match
     min_path_length = 5
     time_series_segment_indexes = []
     
     while condition:
         matches = []
         best_match_index = None
-        best_match_distance = 25
-
+        best_match_distance = max_distance
+        
         for t in range(0,3):
             fig = plt.figure(t)
             query = templates[t]
             serie = time_series[t]
             sa = subsequence_alignment(query, serie,use_c=True)
             match = sa.best_match()
-                                   
+                      
             if sa.distance < best_match_distance:
                 best_match_distance = sa.distance
                 best_match_index = t
@@ -41,7 +40,7 @@ def segment(templates, time_series, min_path_length, max_iterations, max_iterati
             #plt.show()
             #plt.close('all')
             
-        if best_match_index==None:
+        if best_match_index == None:
             print("There is no path found that is close enough, we finish early")
             break
         
@@ -61,8 +60,8 @@ def segment(templates, time_series, min_path_length, max_iterations, max_iterati
             print("the path length is: " + str(length_of_best_path) + " so the time series goes *100")
             iterations_bad_match = 0
             for i in range(s, e+1):
-                for s in range(0,3):
-                    time_series[s][i] = (best_match_index+1)*100
+                for ts in range(0,3):
+                    time_series[ts][i] = (best_match_index+1)*100
             time_series_segment_indexes.append((s,e,best_match_index))
                 
         else: 
