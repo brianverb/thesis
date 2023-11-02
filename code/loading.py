@@ -138,4 +138,8 @@ class Loading:
             updated_subjects.append(data)
         return updated_subjects
 
-        
+    def get_ground_truth_labels(self, subject, exercise):
+        subject = "s" + str(subject+1)
+        exercise = "e" + str(exercise+1)
+        path = os.path.join(self.home_folder, subject, exercise, "annotations.csv")
+        return np.genfromtxt(path, delimiter=',', skip_header=1)

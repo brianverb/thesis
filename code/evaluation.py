@@ -6,7 +6,7 @@ class evaluation:
         self.series = series
         self.segmented_indices = segmented_indices
         self.length = len(series)
-        self.annotate_timeseries = np.full(self.length, -1) 
+        self.annotated_series = np.full((self.length,1), -1) 
         self.ground_truth = ground_truth
         self.TP = 0
         self.TN = 0
@@ -18,15 +18,15 @@ class evaluation:
         self.f1score = None
         self.mcc = None
         
-    def calculate_confusion_values(self, series, truth):
-        for i in range(0, len(series)):
-            if(series[i] != -1):
-                if(series[i] == truth[i]):    
+    def calculate_confusion_values(self):
+        for i in range(0, self.annotated_series.shape[0]):
+            if(self.annotated_series[i] != -1):
+                if(self.annotated_series[i] == self.ground_truth[i]):    
                     self.TP += 1
                 else:
                     self.FP += 1
             else:
-                if(truth[i] != 1):
+                if(self.ground_truth[i] != 1):
                     self.FN +=1
                 else:
                     self.TN += 1
@@ -62,8 +62,7 @@ class evaluation:
         self.calculate_f1score()
         self.calculate_mcc()
         
-        
     def annotate_timeseries(self):    
         for (start,end,label) in self.segmented_indices:
             for index in range(start,end):
-                self.annotate_timeseries[index] = label
+                self.annotated_series[index] = label
