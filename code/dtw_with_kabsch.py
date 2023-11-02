@@ -30,5 +30,6 @@ with open('transformed_series.csv', 'w', newline='') as file:
 #Use DTW to recognize every occurence of an exercise
 (segmented_series, segmented_series_classification_indices) = dtw.segment(templates,transformed_series,min_path_length =5,max_iterations=500, max_iterations_bad_match = 25)
 
-#Use the evaluation metrics to calculate the accuracy and confusion matrix
-#accuracies = eval(segmented_series, segmented_series_classification_indices, subject, exercise, sensor)
+ground_truth = loader.Loading.get_ground_truth_labels(self=l, subject=subject,exercise=exercise)
+MTMM_DTW_EVAL = eval.evaluation(series=time_series, segmented_indices=segmented_series_classification_indices, ground_truth=ground_truth)
+MTMM_DTW_EVAL.evaluate()

@@ -31,9 +31,9 @@ class evaluation:
                     self.FP +=1
                 else:
                     self.FN += 1
-        print("The TP is: " + str(self.FP))
+        print("The TP is: " + str(self.TP))
         print("The TN is: " + str(self.TN))
-        print("The FP is: " + str(self.TP))
+        print("The FP is: " + str(self.FP))
         print("The FN is: " + str(self.FN))
         
     def calculate_accuracy(self):

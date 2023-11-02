@@ -1,10 +1,7 @@
 import loading as loader
-import numpy as np
-import kabsch_timeseries as kabsch_time
 import DTW as dtw
 import evaluation as eval
-import pandas as pd
-import csv
+
 
 #set up the data
 l = loader.Loading("code\data")

@@ -36,7 +36,7 @@ def kabsch_transform_first_window(template, template_length, time_series, transf
     result = np.dot(window,ret_R)
     transformed_timeserie[:num_rows_to_copy, :] = result[:num_rows_to_copy, :]
     
-    plot_kabsch(template[:10], window[:10], result[:10])
+    #plot_kabsch(template[:10], window[:10], result[:10])
 
 def kabsch_transform_sliding_window(template, template_length, time_series, time_series_length, transformed_timeserie, scaling):
     #Slide the window for all of the middle values
@@ -76,7 +76,7 @@ def kabsch_check_transformed_series(time_series_transformed):
         
 def transform(templates, time_series, scaling):
     time_series_length = len(time_series)
-    time_series_transformed = [np.empty(time_series.shape) , np.empty(time_series.shape) ,np.empty(time_series.shape)]
+    time_series_transformed = [np.full(time_series.shape, -1) ,np.full(time_series.shape, -1) ,np.full(time_series.shape, -1)]
 
     #For each template convert the timeseries using the kabsch algorithm
     for t in range(0,3):
@@ -97,7 +97,7 @@ def transform(templates, time_series, scaling):
 
     kabsch_check_transformed_series(time_series_transformed=time_series_transformed)
     
-    plot_kabsch(template[:10], time_series[time_series_length//2-5:time_series_length//2+5], transformed_timeserie[time_series_length//2-5:time_series_length//2+5])
+    #plot_kabsch(template[:10], time_series[time_series_length//2-5:time_series_length//2+5], transformed_timeserie[time_series_length//2-5:time_series_length//2+5])
     
     return time_series_transformed
         
