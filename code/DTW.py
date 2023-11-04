@@ -15,11 +15,12 @@ def get_path_indices_from_array(series, matching_path):
 def segment(templates, time_series, min_path_length, max_iterations, max_iterations_bad_match,margin=0, max_distance = 50):
     iterations = 0
     iterations_bad_match = 0
-    condition = iterations < max_iterations and iterations_bad_match < max_iterations_bad_match
     min_path_length = 5
     time_series_segment_indexes = []
     
-    while condition:
+    while iterations < max_iterations and iterations_bad_match < max_iterations_bad_match:
+        print(iterations < max_iterations and iterations_bad_match < max_iterations_bad_match)
+        iterations += 1 
         matches = []
         best_match_index = None
         best_match_distance = max_distance
@@ -67,6 +68,7 @@ def segment(templates, time_series, min_path_length, max_iterations, max_iterati
         else: 
             print("the path length is: " + str(length_of_best_path) + " so the time series goes *1000")
             iterations_bad_match += 1
+            print("Bad match counter: " + str(iterations_bad_match))
             for i in range(s, e+1):
                 time_series[best_match_index][i] = (best_match_index+1)*1000
                 

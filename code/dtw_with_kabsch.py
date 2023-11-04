@@ -28,8 +28,10 @@ with open('transformed_series.csv', 'w', newline='') as file:
         writer.writerows(plane)
 
 #Use DTW to recognize every occurence of an exercise
-(segmented_series, segmented_series_classification_indices) = dtw.segment(templates,transformed_series,min_path_length =5,max_iterations=500, max_iterations_bad_match = 25)
+(segmented_series, segmented_series_classification_indices) = dtw.segment(templates,transformed_series,min_path_length =5,max_iterations=1000, max_iterations_bad_match = 50)
 
 ground_truth = loader.Loading.get_ground_truth_labels(self=l, subject=subject,exercise=exercise)
 MTMM_DTW_EVAL = eval.evaluation(series=time_series, segmented_indices=segmented_series_classification_indices, ground_truth=ground_truth)
+MTMM_DTW_EVAL.annotate_timeseries()
+MTMM_DTW_EVAL.annotate_ground_truth()
 MTMM_DTW_EVAL.evaluate()
