@@ -1,4 +1,4 @@
-gitimport loading as loader
+import loading as loader
 import DTW as dtw
 import evaluation as eval
 

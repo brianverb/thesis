@@ -18,7 +18,7 @@ templates, time_series = subjects[subject][exercise][sensor]
 
 #Use DTW to recognize every occurence of an exercise
 DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=scaling, max_distance=25, annotation_margin=-0.1)
-DTW.find_matches(k=False, steps=10)
+DTW.find_matches(k=True, steps=10)
 DTW.order_matches()
 DTW.annotate_series()
 
