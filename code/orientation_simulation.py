@@ -7,20 +7,20 @@ class orientation_simulation:
         self.rotated_series = self.series.copy()
         self.degree_change = degree_change
         self.random_changes_amount = random_changes_amount
-        self.random_changes = np.ones((1,random_changes_amount))
+        self.random_changes = []
         self.degree_multiplicator = degree_multiplicator
         self.angles = np.ones(series.shape) 
     
     def create_angles_random_walk(self):
-        for r in range(0,3):            
-            for i in range(1, self.series_length + 1):
-                self.angles[r][i] = self.angles[r][i-1] + self.degree_change * random.uniform(-self.degree_multiplicator, self.degree_multiplicator)
+        for r in range(0,2):            
+            for i in range(1, len(self.series)):
+                self.angles[i,r] = self.angles[i-1,r] + self.degree_change * random.randint(-self.degree_multiplicator, self.degree_multiplicator)
                 
     def create_angles_random_occurences(self):
         for i in range(0,self.random_changes_amount):
-            self.random_changes[i] = (random.uniform(0, self.series.length), [random.uniform(-180, 180), random.uniform(-180, 180), random.uniform(-180, 180)])
+            self.random_changes.append((random.randint(0, len(self.series)), [random.randint(-180, 180), random.randint(-180, 180), random.randint(-180, 180)]))
             
-    def create_rotation_matrix(degrees):
+    def create_rotation_matrix(self, degrees):
         radians = [degree * (np.pi / 180) for degree in degrees]            
             
         theta_rad = radians[0]
@@ -44,9 +44,12 @@ class orientation_simulation:
     def apply_rotation_random_accourences(self):
         for (index, degrees) in self.random_changes:
             rot_matrix = self.create_rotation_matrix(degrees)
-            self.rotated_series[:, index:] = rot_matrix @ self.rotated_series[:, index:].T
+            self.rotated_series[-index:, :] = (rot_matrix @ self.rotated_series[-index:, :].T ).T
         
     def apply_rotation_random_walk(self):
-        for i in range(0, self.series.length):
-            rot_matrix = self.create_rotation_matrix(self.angles[:, i])
-            self.rotated_series[:, i] = rot_matrix @ self.rotated_series[:, i].T
+        for i in range(0, len(self.series)):
+            rot_matrix = self.create_rotation_matrix(self.angles[i, :])
+            if i < 5:
+                test = (rot_matrix @ self.rotated_series[i, :].T ).T
+                print(test)
+            self.rotated_series[i, :] = (rot_matrix @ self.rotated_series[i, :].T ).T
