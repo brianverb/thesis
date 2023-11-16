@@ -29,10 +29,10 @@ class dtw_windowed:
             print("Matching done for template: " + str(t+1))
     
     def order_matches(self):
-        self.matches = sorted(self.matches, key=lambda x: x[2])
+        self.ordered_matches = sorted(self.matches, key=lambda x: x[2])
     
     def annotate_series(self):
-        for (start, end, distance, label) in self.matches:
+        for (start, end, distance, label) in self.ordered_matches:
             if(distance <=self.max_distance):
                 length_of_segment = end-start
                 start_margined = start + int(length_of_segment*self.annotation_margin//2)

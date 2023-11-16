@@ -2,6 +2,7 @@ import loading as loader
 import DTW_w as dtw
 import evaluation as eval
 import matplotlib.pyplot as plt
+import orientation_simulation as orsim
 
 
 #set up the data
@@ -16,9 +17,14 @@ sensor = 1
 # get accelerometer data of first subject performing the second exercises using the second sensor
 templates, time_series = subjects[subject][exercise][sensor]
 
+simulation = orsim.orientation_simulation(time_series, 3,1,3)
+simulation.create_angles_random_occurences()
+simulation.apply_rotation_random_accourences()
+time_series = simulation.rotated_series
+
 #Use DTW to recognize every occurence of an exercise
-DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=scaling, max_distance=25, annotation_margin=-0.1)
-DTW.find_matches(k=True, steps=10)
+DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=scaling, max_distance=50, annotation_margin=-0.1)
+DTW.find_matches(k=False, steps=10)
 DTW.order_matches()
 DTW.annotate_series()
 

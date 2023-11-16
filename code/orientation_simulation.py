@@ -49,7 +49,4 @@ class orientation_simulation:
     def apply_rotation_random_walk(self):
         for i in range(0, len(self.series)):
             rot_matrix = self.create_rotation_matrix(self.angles[i, :])
-            if i < 5:
-                test = (rot_matrix @ self.rotated_series[i, :].T ).T
-                print(test)
             self.rotated_series[i, :] = (rot_matrix @ self.rotated_series[i, :].T ).T
