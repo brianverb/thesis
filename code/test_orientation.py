@@ -16,7 +16,7 @@ sensor = 1
 # get accelerometer data of first subject performing the second exercises using the second sensor
 templates, time_series = subjects[subject][exercise][sensor]
 
-plt.plot(range(0,len(time_series)), time_series[:,0])
+plt.plot(range(0,len(time_series)), time_series[:,1])
 # Add labels and title
 plt.xlabel('Time')
 plt.ylabel('x_acc')
@@ -27,7 +27,7 @@ simulation = orsim.orientation_simulation(time_series, 3,1,3)
 simulation.create_angles_random_occurences()
 simulation.apply_rotation_random_accourences()
 
-plt.plot(range(0,len(time_series)), simulation.rotated_series[:,0])
+plt.plot(range(0,len(time_series)), simulation.rotated_series[:,1])
 # Add labels and title
 plt.xlabel('Time_rotated_1')
 plt.ylabel('x_acc')
@@ -38,9 +38,7 @@ simulation2 = orsim.orientation_simulation(time_series, random_changes_amount=0,
 simulation.create_angles_random_walk()
 simulation.apply_rotation_random_walk()
 
-
-
-plt.plot(range(0,len(time_series)), simulation.rotated_series[:,0])
+plt.plot(range(0,len(time_series)), simulation.rotated_series[:,1])
 # Add labels and title
 plt.xlabel('Time_rotated_2')
 plt.ylabel('x_acc')

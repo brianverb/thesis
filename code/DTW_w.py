@@ -1,6 +1,8 @@
 import kabsch
 import numpy as np
 from dtaidistance import dtw_ndim
+import matplotlib.pyplot as plt
+from itertools import groupby
 
 class dtw_windowed:
     def __init__(self, series, templates, annotation_margin=0, scaling=False, max_distance=25):
@@ -14,6 +16,7 @@ class dtw_windowed:
         self.annotation_margin = annotation_margin
         
     def find_matches(self, k=False, steps=1):
+        print("Start finding matches.")
         for t in range(0,len(self.templates)):
             template = self.templates[t]
             template_length = len(template)
@@ -27,7 +30,21 @@ class dtw_windowed:
                 distance = dtw_ndim.distance(window, template)
                 self.matches.append((i,i+template_length,distance,t))
             print("Matching done for template: " + str(t+1))
+            
+    def get_distances_by_template_id(self,arr, x):
+        return [tup[2] for tup in arr if len(tup) >= 4 and tup[3] == x]
     
+    def plot_matches(self):     
+        for i in range(0, len(self.templates)):
+            data = self.get_distances_by_template_id(self.matches,i)
+            plt.plot(range(0,len(data)), data)
+            # Add labels and title
+            plt.xlabel('Matches')
+            plt.ylabel('DTW distance')
+            plt.title('DTW distances for all matches')
+            plt.show()
+    
+        
     def order_matches(self):
         self.ordered_matches = sorted(self.matches, key=lambda x: x[2])
     
