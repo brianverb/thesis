@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from itertools import groupby
 
 class dtw_windowed:
-    def __init__(self, series, templates, annotation_margin=0, scaling=False, max_distance=25):
+    def __init__(self, series, templates, annotation_margin=0, scaling=False, max_distance=25, max_matches=30):
         self.series = series
         self.series_length = len(series)
         self.templates = templates
@@ -14,6 +14,7 @@ class dtw_windowed:
         self.scaling = scaling
         self.max_distance = max_distance
         self.annotation_margin = annotation_margin
+        self.max_matches = max_matches
         
     def find_matches(self, k=False, steps=1):
         print("Start finding matches.")
@@ -48,7 +49,7 @@ class dtw_windowed:
     def order_matches(self):
         self.ordered_matches = sorted(self.matches, key=lambda x: x[2])
     
-    def annotate_series(self):
+    def annotate_series_max_distance(self):
         for (start, end, distance, label) in self.ordered_matches:
             if(distance <=self.max_distance):
                 length_of_segment = end-start
@@ -60,6 +61,40 @@ class dtw_windowed:
                         self.annotated_series[index] = label
             else:
                 break
+    
+    def annotate_series_max_matches(self):
+        index = 0
+        while index <= self.max_matches:
+            (start, end, _, label) = self.ordered_matches[index]
+            length_of_segment = end-start
+            start_margined = start + int(length_of_segment*self.annotation_margin//2)
+            end_margined = end - int(length_of_segment*self.annotation_margin//2)
 
+            for index in range(start_margined,end_margined+1):
+                if(self.annotated_series[index] == -1):
+                    self.annotated_series[index] = label
+            index +=1   
+            
+    def annotate_series_max_matches_expected_matched_segments(self):
+        expected_matched_segments = 0
+        for i in range(0, len(self.templates)):
+            expected_matched_segments += len(self.templates[i]) * 10
+        matched_segments = 0
+        index = 0
+        print(self.ordered_matches)
+        while matched_segments <= expected_matched_segments:
+            (start, end, _, label) = self.ordered_matches[index]
+            
+            length_of_segment = end-start
+            start_margined = start + int(length_of_segment*self.annotation_margin//2)
+            end_margined = end - int(length_of_segment*self.annotation_margin//2)
+
+            for indice in range(start_margined,end_margined+1):
+                if(self.annotated_series[indice] == -1):
+                    matched_segments +=1
+                    self.annotated_series[indice] = label
+            index +=1
+            print("matched segments: " + str(matched_segments) + "   expected segments: " + str(expected_matched_segments) +  "  index: " + str(index))
+   
 
         

@@ -19,6 +19,9 @@ class orientation_simulation:
     def create_angles_random_occurences(self):
         for i in range(0,self.random_changes_amount):
             self.random_changes.append((random.randint(0, len(self.series)), [random.randint(-180, 180), random.randint(-180, 180), random.randint(-180, 180)]))
+        for (index, degrees) in self.random_changes:           
+            for i in range(index, len(self.series)):
+                self.angles[i] = self.angles[i] + degrees
             
     def create_rotation_matrix(self, degrees):
         radians = [degree * (np.pi / 180) for degree in degrees]            
@@ -42,7 +45,7 @@ class orientation_simulation:
         return rot_matrix
         
     def apply_rotation_random_accourences(self):
-        for (index, degrees) in self.random_changes:
+        for (index, degrees) in self.random_changes:               
             rot_matrix = self.create_rotation_matrix(degrees)
             self.rotated_series[-index:, :] = (rot_matrix @ self.rotated_series[-index:, :].T ).T
         

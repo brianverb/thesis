@@ -24,11 +24,11 @@ time_series = simulation.rotated_series
 '''
 
 #Use DTW to recognize every occurence of an exercise
-DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=scaling, max_distance=50, annotation_margin=-0.1)
+DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=scaling, max_distance=50, max_matches=30,annotation_margin=-0.1)
 DTW.find_matches(k=False, steps=10)
-DTW.plot_matches()
+#DTW.plot_matches()
 DTW.order_matches()
-DTW.annotate_series()
+DTW.annotate_series_max_matches_expected_matched_segments()
 
 ground_truth = loader.Loading.get_ground_truth_labels(self=l, subject=subject,exercise=exercise)
 

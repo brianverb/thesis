@@ -23,7 +23,7 @@ plt.ylabel('x_acc')
 plt.title('X_accelator over time')
 plt.show()
 
-simulation = orsim.orientation_simulation(time_series, 3,1,3)
+simulation = orsim.orientation_simulation(time_series, random_changes_amount=3, degree_change=1,degree_multiplicator=1)
 simulation.create_angles_random_occurences()
 simulation.apply_rotation_random_accourences()
 
@@ -35,14 +35,24 @@ plt.title('X_accelator over time')
 plt.show()
 
 simulation2 = orsim.orientation_simulation(time_series, random_changes_amount=0, degree_change=1,degree_multiplicator=1)
-simulation.create_angles_random_walk()
-simulation.apply_rotation_random_walk()
+simulation2.create_angles_random_walk()
+simulation2.apply_rotation_random_walk()
 
-plt.plot(range(0,len(time_series)), simulation.rotated_series[:,1])
+plt.plot(range(0,len(time_series)), simulation2.rotated_series[:,1])
 # Add labels and title
 plt.xlabel('Time_rotated_2')
 plt.ylabel('x_acc')
 plt.title('X_accelator over time')
 plt.show()
 
-ground_truth = loader.Loading.get_ground_truth_labels(self=l, subject=subject,exercise=exercise)
+simulation3 = orsim.orientation_simulation(time_series, random_changes_amount=3, degree_change=1,degree_multiplicator=1)
+simulation3.create_angles_random_occurences()
+simulation3.create_angles_random_occurences()
+simulation3.apply_rotation_random_walk()
+
+plt.plot(range(0,len(time_series)), simulation3.rotated_series[:,1])
+# Add labels and title
+plt.xlabel('Time_rotated_2')
+plt.ylabel('x_acc')
+plt.title('X_accelator over time')
+plt.show()
