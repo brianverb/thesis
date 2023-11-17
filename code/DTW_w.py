@@ -31,7 +31,30 @@ class dtw_windowed:
                 distance = dtw_ndim.distance(window, template)
                 self.matches.append((i,i+template_length,distance,t))
             print("Matching done for template: " + str(t+1))
+    
+    def find_matches_svd(self, steps=1):
+        print("Start finding matches.")
+        for t in range(0,len(self.templates)):
+            template = self.templates[t]
+            template_length = len(template)
+            principal_components = self.svd(template)
             
+            for i in range(0,self.series_length-template_length, steps):
+                window = self.series[i:i+template_length]
+                result = self.apply_svd(principal_components, window
+                                        )
+                distance = dtw_ndim.distance(result, template)
+                self.matches.append((i,i+template_length,distance,t))
+            print("Matching done for template: " + str(t+1))
+            
+    def apply_svd(self, principal_components, window):
+        return np.dot(window, principal_components.T)
+   
+    def svd(self, template):
+        _, _, VT = np.linalg.svd(template, full_matrices=False)
+        print(VT)
+        return VT 
+        
     def get_distances_by_template_id(self,arr, x):
         return [tup[2] for tup in arr if len(tup) >= 4 and tup[3] == x]
     
