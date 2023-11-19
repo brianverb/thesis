@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from itertools import groupby
 
 class dtw_windowed:
-    def __init__(self, series, templates, annotation_margin=0, scaling=False, max_distance=25, max_matches=30):
+    def __init__(self, series, templates, annotation_margin=0, scaling=True, max_distance=25, max_matches=30):
         self.series = series
         self.series_length = len(series)
         self.templates = templates
@@ -41,16 +41,18 @@ class dtw_windowed:
             
             for i in range(0,self.series_length-template_length, steps):
                 window = self.series[i:i+template_length]
-                result = self.apply_svd(principal_components, window
-                                        )
+                result = self.apply_svd(window, principal_components)
+                
                 distance = dtw_ndim.distance(result, template)
                 self.matches.append((i,i+template_length,distance,t))
             print("Matching done for template: " + str(t+1))
             
-    def apply_svd(self, principal_components, window):
+    def apply_svd(self, window, principal_components):
         return np.dot(window, principal_components.T)
    
     def svd(self, template):
+        #mean = np.mean(template, axis=0)
+        #template = template - mean
         _, _, VT = np.linalg.svd(template, full_matrices=False)
         print(VT)
         return VT 

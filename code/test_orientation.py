@@ -24,7 +24,7 @@ plt.ylabel('x_acc')
 plt.title('X_accelator over time')
 plt.show()
 
-simulation = orsim.orientation_simulation(time_series, random_changes_amount=3, degree_change=1,degree_multiplicator=1)
+simulation = orsim.orientation_simulation(time_series, random_changes_amount=1, degree_change=1,degree_multiplicator=1)
 simulation.create_angles_random_occurences()
 simulation.apply_rotation_random_accourences()
 np.save('random_occurences_3_1_1.npy', simulation.angles)
