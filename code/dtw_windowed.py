@@ -25,7 +25,7 @@ time_series = simulation.rotated_series
 
 #Use DTW to recognize every occurence of an exercise
 DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=True, max_distance=50, max_matches=30,annotation_margin=0)
-DTW.find_matches(k=True, steps=10)
+DTW.find_matches(k=False, steps=10)
 #DTW.find_matches_svd(steps=10)
 #DTW.plot_matches()
 DTW.order_matches()
