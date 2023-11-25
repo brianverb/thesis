@@ -1,5 +1,5 @@
 import loading as loader
-import DTW_w as dtw
+import MTW_DTW as dtw
 import evaluation as eval
 import matplotlib.pyplot as plt
 import orientation_simulation as orsim
@@ -18,7 +18,7 @@ sensor = 1
 templates, time_series = subjects[subject][exercise][sensor]
 
 simulation = orsim.orientation_simulation(time_series, 1,1,3)
-simulation.angles = np.load('random_combination.npy')
+simulation.angles = np.load('random_occurences_3_1_1.npy')
 
 simulation.apply_rotation_random_walk()
 time_series = simulation.rotated_series

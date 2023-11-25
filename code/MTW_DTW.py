@@ -27,8 +27,8 @@ class dtw_windowed:
                     _, R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), self.scaling)
                     window = np.dot(window,R)
                     window = np.array(window)
-
-                distance = dtw_ndim.distance(window, template)
+ 
+                distance = dtw_ndim.distance(window, template, use_c=True)
                 self.matches.append((i,i+template_length,distance,t))
             print("Matching done for template: " + str(t+1))
     
@@ -43,7 +43,7 @@ class dtw_windowed:
                 window = self.series[i:i+template_length]
                 result = self.apply_svd(window, principal_components)
                 
-                distance = dtw_ndim.distance(result, template)
+                distance = dtw_ndim.distance(result, template,use_c=True)
                 self.matches.append((i,i+template_length,distance,t))
             print("Matching done for template: " + str(t+1))
             
