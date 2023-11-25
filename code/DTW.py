@@ -13,7 +13,7 @@ def get_path_indices_from_array(series, matching_path):
     return matching_path      
 
 def segment(templates, time_series, min_path_length, max_iterations, max_iterations_bad_match,margin=0, max_distance = 50):
-    time_series = [time_series.copy() for _ in range(3)]
+  
     iterations = 0
     iterations_bad_match = 0
     min_path_length = 5
@@ -30,6 +30,8 @@ def segment(templates, time_series, min_path_length, max_iterations, max_iterati
             fig = plt.figure(t)
             query = templates[t]
             serie = time_series[t]
+            print(query.shape)
+            print(serie.shape)
             sa = subsequence_alignment(query, serie,use_c=True)
             match = sa.best_match()
                       

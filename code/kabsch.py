@@ -17,10 +17,12 @@ def rigid_transform_3D(A, B, scale):
     assert len(A) == len(B)
 
     N = A.shape[0];  # total points
-
-    centroid_A = np.mean(A, axis=0)
-    centroid_B = np.mean(B, axis=0)
-
+    
+    #centroid_A = np.mean(A, axis=0)
+    centroid_A = np.matrix([[0,0,0]])
+    #centroid_B = np.mean(B, axis=0)
+    centroid_B = np.matrix([[0,0,0]])
+    
     # center the points
     AA = A - np.tile(centroid_A, (N, 1))
     BB = B - np.tile(centroid_B, (N, 1))
