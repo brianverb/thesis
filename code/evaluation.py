@@ -21,6 +21,7 @@ class evaluation:
         self.recall = None
         self.f1score = None
         self.mcc = None
+        self.segment_percentage = 0.8
         
     def calculate_confusion_values(self):
         for i in range(0, self.annotated_series.shape[0]):
@@ -90,3 +91,53 @@ class evaluation:
         for (start,end,label) in self.ground_truth:
             for index in range(int(start),int(end+1)):
                 self.ground_truth_serie[index] = int(label)
+                
+    def get_segments(self):
+        segments = []
+        start = 0
+        while start < self.length -1: 
+            end = start + 1
+            label = self.annotated_series[start]
+            while self.annotated_series[end] == label:
+                if end < self.length-1:
+                    end += 1
+                else:
+                    break
+            
+            end -= 1
+            segments.append((start, end, label))
+            
+            start = end + 1
+        self.segmented_indices = segments
+        return segments
+    
+    def clean_annotations(self):
+        segments = self.get_segments()
+        new_segments = []
+        cleaned_segments = 0
+        for index in range(0,len(segments)-2):
+            (s1, e1, first_label) = segments[index]
+            (s2, e2, second_label) = segments[index+1]
+            (s3, e3, third_label) = segments[index+2]
+            
+            if first_label == third_label and second_label != first_label:
+                print("found a sandwiched segment")
+                print(str(((e1-s1) + (e3-s3))) + " / " + str(((e1-s1) + (e2-s2) + (e3-s3))) + " = " + str(((e1-s1) + (e3-s3)) / ((e1-s1) + (e2-s2) + (e3-s3))))
+                if (((e1-s1) + (e3-s3)) / ((e1-s1) + (e2-s2) + (e3-s3))) > self.segment_percentage and (e2-s2) < 50:
+                    print("cleaning up segment.")
+                    index += 1
+                    cleaned_segments += 2
+                    new_segments.append((s1,e3, first_label))
+                else:
+                    new_segments.append((s1,e1,first_label))
+        print("Amount of removed excess segments: " + str(cleaned_segments))
+        self.segmented_indices = new_segments
+        self.annotate_timeseries()
+        
+        if(cleaned_segments > 0):
+            
+            self.clean_annotations()
+        
+              
+            
+            

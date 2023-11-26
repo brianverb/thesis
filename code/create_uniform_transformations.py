@@ -61,7 +61,7 @@ plt.show()
 simulation4 = orsim.orientation_simulation(time_series, random_changes_amount=1, degree_change=0,degree_multiplicator=0)
 simulation4.create_uniform_rotation(360)
 simulation4.apply_rotation()
-np.save('rotation__degrees.npy', simulation4.angles)
+np.save('rotation_360_degrees.npy', simulation4.angles)
 
 plt.plot(range(0,len(time_series)), simulation4.rotated_series[:,1])
 # Add labels and title

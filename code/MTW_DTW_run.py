@@ -17,15 +17,15 @@ sensor = 1
 templates, time_series = subjects[subject][exercise][sensor]
 
 simulation = orsim.orientation_simulation(time_series, 1,1,3)
-simulation.angles = np.load('random_occurences_3.npy')
+simulation.angles = np.load('rotation_200_degrees.npy')
+simulation.apply_rotation()
 
-simulation.apply_rotation_random_walk()
 
 time_series = simulation.rotated_series
 
 #Use DTW to recognize every occurence of an exercise
 DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=50, max_matches=30,annotation_margin=0)
-DTW.find_matches(k=True, steps=1)
+DTW.find_matches(k=False, steps=1)
 #DTW.find_matches_svd(steps=10)
 #DTW.plot_matches()
 DTW.order_matches()
@@ -34,7 +34,7 @@ DTW.annotate_series_max_matches_expected_matched_segments()
 ground_truth = loader.Loading.get_ground_truth_labels(self=l, subject=subject,exercise=exercise)
 
 
-MTMM_DTW_EVAL = eval.evaluation(series=time_series, segmented_indices=DTW.annotated_series, ground_truth=ground_truth)
+MTMM_DTW_EVAL = eval.evaluation(series=time_series, ground_truth=ground_truth)
 MTMM_DTW_EVAL.annotated_series = DTW.annotated_series
 MTMM_DTW_EVAL.annotate_ground_truth()
 MTMM_DTW_EVAL.evaluate()
