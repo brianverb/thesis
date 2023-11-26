@@ -137,6 +137,7 @@ class dtw_windowed:
             expected_matched_segments += len(self.templates[i]) * 10
         matched_segments = 0
         index = 0
+        print(expected_matched_segments)
         while matched_segments <= expected_matched_segments:
             (start, end, _, label) = self.ordered_matches[index]
             

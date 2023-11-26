@@ -12,10 +12,10 @@ class evaluation:
         self.annotated_series = np.full((self.length,1), -1)
         self.ground_truth = ground_truth
         self.ground_truth_serie = np.full((self.length,1), -1) 
-        self.TP = 0
-        self.TN = 0
-        self.FP = 0
-        self.FN = 0
+        self.TP = 1
+        self.TN = 1
+        self.FP = 1
+        self.FN = 1
         self.accuracy = None
         self.precision = None
         self.recall = None
@@ -24,10 +24,10 @@ class evaluation:
         self.segment_percentage = 0.8
         
     def calculate_confusion_values(self):
-        self.TP = 0
-        self.TN = 0
-        self.FP = 0
-        self.FN = 0
+        self.TP = 1
+        self.TN = 1
+        self.FP = 1
+        self.FN = 1
         for i in range(0, self.annotated_series.shape[0]):
             if(self.annotated_series[i] == -1 and self.ground_truth_serie[i] == -1):
                 self.TN += 1
@@ -141,7 +141,39 @@ class evaluation:
         if(cleaned_segments > 0):
             
             self.clean_annotations()
+    
+    def simple_confusion_matrix(self):
+        conf = np.zeros((4,4))
+        for (start,end,label) in self.ground_truth:
+            occurences = np.zeros((4))
+            for i in range(int(start),int(end)):
+                occurences[self.annotated_series[i]+1] += 1
+            
+            max_index = np.argmax(occurences)
+            
+            conf[int(label)+1,max_index] += 1
+            
+        return conf       
+    
+    def plot_simple_confusion_matrix(self):
+        conf = self.simple_confusion_matrix().astype(int)
+        xlabels = ["Missed", 1, 2, 3]
+        ylabels = ["Wrong", 1, 2, 3]
+        print(conf)
+        # Plot confusion matrix
+        sns.set(font_scale=1.2)
+        plt.figure(figsize=(8, 6))
+        sns.heatmap(conf, annot=True, fmt='d', cmap='Blues',
+                    xticklabels=xlabels,
+                    yticklabels=ylabels)
+
+        plt.title('Confusion Matrix')
+        plt.xlabel('Predicted')
+        plt.ylabel('Actual')
+        plt.show()
+                
         
-              
+                
+            
             
             

@@ -30,7 +30,7 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
             serie = time_series[t]
             #print(query.shape)
             #print(serie.shape)
-            sa = subsequence_alignment(query, serie, use_c=True)
+            sa = subsequence_alignment(query, serie,penalty=0.2, use_c=True)
             match = sa.best_match()
                       
             if sa.distance < best_match_distance:

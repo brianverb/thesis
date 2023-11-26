@@ -27,7 +27,7 @@ plt.title('Rotated time-series')
 plt.show()
 
 simulation = orsim.orientation_simulation(time_series, 1,1,3)
-simulation.angles = np.load('rotation_150_degrees.npy')
+simulation.angles = np.load('rotation__degrees.npy')
 
 simulation.apply_rotation()
 time_series = simulation.rotated_series
@@ -99,3 +99,5 @@ plt.title('Annotated labels')
 
 plt.legend()
 plt.show()
+
+MTMM_DTW_EVAL.plot_simple_confusion_matrix()
