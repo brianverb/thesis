@@ -12,7 +12,7 @@ def get_path_indices_from_array(series, matching_path):
     matching_path = np.array(matching_path)
     return matching_path      
 
-def segment(templates, time_series,  max_iterations, max_iterations_bad_match,min_path_length=10, margin=0, max_distance =200):
+def segment(templates, time_series,  max_iterations, max_iterations_bad_match,min_path_length=10, margin=0, max_distance =300):
     iterations = 0
     iterations_bad_match = 0
     time_series_segment_indexes = []
@@ -25,7 +25,7 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
         best_match_distance = max_distance
         
         for t in range(0,3):
-            fig = plt.figure(t)
+            #fig = plt.figure(t)
             query = templates[t]
             serie = time_series[t]
             #print(query.shape)
@@ -73,6 +73,7 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
             for i in range(s, e+1):
                 time_series[best_match_index][i] = (best_match_index+1)*1000
                 
+    print("max iterations for a bad match counter: " + str(max_iterations_bad_match) + "  bad iteration counter: " + str(iterations_bad_match) + "  iterations: " + str(iterations))
     return time_series, time_series_segment_indexes
 
 '''

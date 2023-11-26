@@ -2,9 +2,10 @@ import kabsch
 import numpy as np
 import matplotlib.pyplot as plt
 
-def plot_3d_path(data):
+def plot_3d_path(data, title):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
+    plt.title(title)
 
     # Plot the 3D data points
     ax.scatter(data[:, 0], data[:, 1], data[:, 2], c='b', marker='o', label='Data Points')
@@ -16,17 +17,17 @@ def plot_3d_path(data):
                 [data[i, 1], data[i+1, 1]],
                 [data[i, 2], data[i+1, 2]], c='r')
 
-    ax.set_xlabel('X Label')
-    ax.set_ylabel('Y Label')
-    ax.set_zlabel('Z Label')
+    ax.set_xlabel('X_acc')
+    ax.set_ylabel('Y_acc')
+    ax.set_zlabel('Z_acc')
 
     plt.legend()
     plt.show()
     
 def plot_kabsch(template, window, result):
-    plot_3d_path(template)
-    plot_3d_path(window)
-    plot_3d_path(result)
+    plot_3d_path(template, "template")
+    plot_3d_path(window, "window")
+    plot_3d_path(result, "result")
     
 def kabsch_transform_first_window(template, template_length, time_series, transformed_timeserie, scaling):
     window = time_series[0:template_length]
@@ -36,7 +37,7 @@ def kabsch_transform_first_window(template, template_length, time_series, transf
     result = np.dot(window,ret_R)
     transformed_timeserie[:num_rows_to_copy, :] = result[:num_rows_to_copy, :]
     
-    #plot_kabsch(template[:20], window[:20], result[:20])
+    #plot_kabsch(template, window, result)
 
 def kabsch_transform_sliding_window(template, template_length, time_series, time_series_length, transformed_timeserie, scaling):
     #Slide the window for all of the middle values
@@ -96,8 +97,6 @@ def transform(templates, time_series, scaling):
         time_series_transformed[t] = transformed_timeserie
 
     kabsch_check_transformed_series(time_series_transformed=time_series_transformed)
-    
-    #plot_kabsch(template[:20], time_series[time_series_length//2-10:time_series_length//2+10], transformed_timeserie[time_series_length//2-10:time_series_length//2+10])
-    
+        
     return time_series_transformed
         

@@ -17,7 +17,7 @@ sensor = 1
 templates, time_series = subjects[subject][exercise][sensor]
 
 simulation = orsim.orientation_simulation(time_series, 1,1,3)
-simulation.angles = np.load('rotation__degrees.npy')
+simulation.angles = np.load('rotation_150_degrees.npy')
 simulation.apply_rotation()
 
 
@@ -25,7 +25,7 @@ time_series = simulation.rotated_series
 
 #Use DTW to recognize every occurence of an exercise
 DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=50, max_matches=30,annotation_margin=0)
-DTW.find_matches(k=False, steps=1)
+DTW.find_matches(k=True, steps=1)
 #DTW.find_matches_svd(steps=10)
 #DTW.plot_matches()
 DTW.order_matches()
