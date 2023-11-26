@@ -17,7 +17,7 @@ sensor = 1
 templates, time_series = subjects[subject][exercise][sensor]
 
 simulation = orsim.orientation_simulation(time_series, 1,1,3)
-simulation.angles = np.load('rotation_200_degrees.npy')
+simulation.angles = np.load('rotation__degrees.npy')
 simulation.apply_rotation()
 
 
@@ -38,9 +38,6 @@ MTMM_DTW_EVAL = eval.evaluation(series=time_series, ground_truth=ground_truth)
 MTMM_DTW_EVAL.annotated_series = DTW.annotated_series
 MTMM_DTW_EVAL.annotate_ground_truth()
 MTMM_DTW_EVAL.evaluate()
-
-DTW.plot_distances_points(ground_truths=MTMM_DTW_EVAL.ground_truth)
-
 # Plotting
 plt.figure(figsize=(10, 6))  # Adjust the figure size as needed
 plt.plot(MTMM_DTW_EVAL.annotated_series, label='Annotated series', color='red')
@@ -53,3 +50,22 @@ plt.title('Annotated labels')
 
 plt.legend()
 plt.show()
+MTMM_DTW_EVAL.clean_annotations()
+MTMM_DTW_EVAL.evaluate()
+# Plotting
+plt.figure(figsize=(10, 6))  # Adjust the figure size as needed
+plt.plot(MTMM_DTW_EVAL.annotated_series, label='Annotated series', color='red')
+plt.plot(MTMM_DTW_EVAL.ground_truth_serie, label='Ground truth', color='green')
+
+# Add labels and title
+plt.xlabel('Time')
+plt.ylabel('label')
+plt.title('Annotated labels')
+
+plt.legend()
+plt.show()
+
+
+DTW.plot_distances_points(ground_truths=MTMM_DTW_EVAL.ground_truth)
+
+

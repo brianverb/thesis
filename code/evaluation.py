@@ -24,6 +24,10 @@ class evaluation:
         self.segment_percentage = 0.8
         
     def calculate_confusion_values(self):
+        self.TP = 0
+        self.TN = 0
+        self.FP = 0
+        self.FN = 0
         for i in range(0, self.annotated_series.shape[0]):
             if(self.annotated_series[i] == -1 and self.ground_truth_serie[i] == -1):
                 self.TN += 1
@@ -121,10 +125,10 @@ class evaluation:
             (s3, e3, third_label) = segments[index+2]
             
             if first_label == third_label and second_label != first_label:
-                print("found a sandwiched segment")
-                print(str(((e1-s1) + (e3-s3))) + " / " + str(((e1-s1) + (e2-s2) + (e3-s3))) + " = " + str(((e1-s1) + (e3-s3)) / ((e1-s1) + (e2-s2) + (e3-s3))))
+                #print("found a sandwiched segment")
+                #print(str(((e1-s1) + (e3-s3))) + " / " + str(((e1-s1) + (e2-s2) + (e3-s3))) + " = " + str(((e1-s1) + (e3-s3)) / ((e1-s1) + (e2-s2) + (e3-s3))))
                 if (((e1-s1) + (e3-s3)) / ((e1-s1) + (e2-s2) + (e3-s3))) > self.segment_percentage and (e2-s2) < 50:
-                    print("cleaning up segment.")
+                    #print("cleaning up segment.")
                     index += 1
                     cleaned_segments += 2
                     new_segments.append((s1,e3, first_label))
