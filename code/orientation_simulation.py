@@ -11,6 +11,12 @@ class orientation_simulation:
         self.degree_multiplicator = degree_multiplicator
         self.angles = np.ones(series.shape) 
     
+    def reset_angles(self):
+        self.angles = np.ones(self.series.shape) 
+
+    def create_uniform_rotation(self, angle):
+        self.angles = np.full(self.series.shape, angle)
+    
     def create_angles_random_walk(self):
         for r in range(0,2):            
             for i in range(1, len(self.series)):
@@ -24,7 +30,7 @@ class orientation_simulation:
                 self.angles[i] = self.angles[i] + degrees
             
     def create_rotation_matrix(self, degrees):
-        radians = [degree * (np.pi / 180) for degree in degrees]            
+        radians = [degree * np.pi / 180 for degree in degrees]            
             
         theta_rad = radians[0]
         rot_x = np.array([[1, 0, 0],
@@ -49,7 +55,7 @@ class orientation_simulation:
             rot_matrix = self.create_rotation_matrix(degrees)
             self.rotated_series[-index:, :] = (rot_matrix @ self.rotated_series[-index:, :].T ).T
         
-    def apply_rotation_random_walk(self):
+    def apply_rotation(self):
         for i in range(0, len(self.series)):
             rot_matrix = self.create_rotation_matrix(self.angles[i, :])
             self.rotated_series[i, :] = (rot_matrix @ self.rotated_series[i, :].T ).T

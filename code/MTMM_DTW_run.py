@@ -2,8 +2,7 @@ import loading as loader
 import numpy as np
 import kabsch_timeseries as kabsch_time
 import MTMM_DTW as dtw
-import evaluation_segments as eval
-import pandas as pd
+import evaluation as eval
 import csv
 import matplotlib.pyplot as plt
 import orientation_simulation as orsim
@@ -21,7 +20,7 @@ sensor = 1
 templates, time_series = subjects[subject][exercise][sensor]
 
 simulation = orsim.orientation_simulation(time_series, 1,1,3)
-simulation.angles = np.load('random_occurences_3_1_1.npy')
+simulation.angles = np.load('random_occurences_1.npy')
 
 simulation.apply_rotation_random_walk()
 time_series = simulation.rotated_series
@@ -54,7 +53,7 @@ with open('transformed_series.csv', 'w', newline='') as file:
 time_series = [time_series.copy() for _ in range(3)]
 
 #Use DTW to recognize every occurence of an exercise
-(segmented_series, segmented_series_classification_indices) = dtw.segment(templates,time_series=transformed_series,min_path_length =5,max_iterations=50, max_iterations_bad_match = 50)
+(segmented_series, segmented_series_classification_indices) = dtw.segment(templates,time_series=transformed_series,min_path_length=10,max_iterations=1000, max_iterations_bad_match = 50)
 
 ground_truth = loader.Loading.get_ground_truth_labels(self=l, subject=subject,exercise=exercise)
 #MTMM_DTW_EVAL = eval.evaluation(series=time_series[0], segmented_indices=segmented_series_classification_indices, ground_truth=ground_truth)

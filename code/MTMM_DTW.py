@@ -12,7 +12,7 @@ def get_path_indices_from_array(series, matching_path):
     matching_path = np.array(matching_path)
     return matching_path      
 
-def segment(templates, time_series, min_path_length, max_iterations, max_iterations_bad_match,margin=0, max_distance = 50):
+def segment(templates, time_series, min_path_length, max_iterations, max_iterations_bad_match,margin=0, max_distance = 100):
   
     iterations = 0
     iterations_bad_match = 0

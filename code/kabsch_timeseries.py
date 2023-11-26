@@ -71,8 +71,8 @@ def kabsch_check_transformed_series(time_series_transformed):
         contains_nann = np.isnan(time_series_transformed[i]).any()
         contains_none = any(item is None for item in time_series_transformed[i])
         contains_empty = contains_nann or contains_none
-        print("Does timeseries " + str(i) +" have empty values: " +  str(contains_empty))
-        print(time_series_transformed[i].shape)
+        #print("Does timeseries " + str(i) +" have empty values: " +  str(contains_empty))
+        #print(time_series_transformed[i].shape)
         
 def transform(templates, time_series, scaling):
     time_series_length = len(time_series)
@@ -86,8 +86,8 @@ def transform(templates, time_series, scaling):
         
         kabsch_transform_first_window(template=template, template_length=template_length,time_series=time_series, transformed_timeserie=transformed_timeserie, scaling=scaling )
           
-        print("template: " +str(t+1) + " with shape: " + str(template.shape))
-        print("start: " + str(template_length//2) + "  end: " + str(time_series_length-template_length))
+        #print("template: " +str(t+1) + " with shape: " + str(template.shape))
+        #print("start: " + str(template_length//2) + "  end: " + str(time_series_length-template_length))
         
         result = kabsch_transform_sliding_window(template=template, template_length=template_length, time_series=time_series, time_series_length=time_series_length, transformed_timeserie=transformed_timeserie, scaling=scaling)
         
