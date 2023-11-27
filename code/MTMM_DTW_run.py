@@ -24,7 +24,7 @@ preprocessor = preproces.preprocessor(series=time_series, templates=templates)
 preprocessor.process()
 
 simulation = orsim.orientation_simulation(time_series, 1,1,3)
-simulation.angles = np.load('rotation__degrees.npy')
+simulation.angles = np.load('rotation_150_degrees.npy')
 
 simulation.apply_rotation()
 time_series = simulation.rotated_series
