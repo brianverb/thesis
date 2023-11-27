@@ -6,6 +6,7 @@ import evaluation as eval
 import csv
 import matplotlib.pyplot as plt
 import orientation_simulation as orsim
+import preprocessing as preproces
 
 #set up the data
 l = loader.Loading("code\data")
@@ -19,12 +20,8 @@ sensor = 1
 # get accelerometer data of first subject performing the second exercises using the second sensor
 templates, time_series = subjects[subject][exercise][sensor]
 
-plt.plot(range(0,len(time_series)), time_series)
-# Add labels and title
-plt.xlabel('Time')
-plt.ylabel('Accel')
-plt.title('Rotated time-series')
-plt.show()
+preprocessor = preproces.preprocessor(series=time_series, templates=templates)
+preprocessor.process()
 
 simulation = orsim.orientation_simulation(time_series, 1,1,3)
 simulation.angles = np.load('rotation__degrees.npy')
