@@ -50,7 +50,7 @@ class preprocessor:
         (_, end, _) = grouped_deviations[self.minimum_deviation_in_order-1]
         
         for i in range(start,end):
-            self.series[i] = float('inf')
+            self.series[i] = 0
        
                     
     def plot_series(self, title):
