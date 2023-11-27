@@ -14,8 +14,9 @@ class preprocessor:
         self.minimum_deviation_in_order = minimum_deviation_in_order
         self.tolerance = tolerance
     
-    def process(self, kabsch=False):
+    def process(self):
         self.remove_idle_parts()
+        return self.series
     
     def remove_idle_parts(self):
         self.plot_series("Before preprocessing")

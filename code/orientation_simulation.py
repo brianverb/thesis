@@ -2,7 +2,7 @@ import numpy as np
 import random
 
 class orientation_simulation:
-    def __init__(self, series, random_changes_amount, degree_change, degree_multiplicator):
+    def __init__(self, series, random_changes_amount=0, degree_change=0, degree_multiplicator=0):
         self.series = series
         self.rotated_series = self.series.copy()
         self.degree_change = degree_change
