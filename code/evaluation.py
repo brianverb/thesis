@@ -21,7 +21,7 @@ class evaluation:
         self.recall = None
         self.f1score = None
         self.mcc = None
-        self.segment_percentage = 0.8
+        self.segment_percentage = 0.5
         
     def calculate_confusion_values(self):
         self.TP = 1
@@ -150,8 +150,10 @@ class evaluation:
                 occurences[self.annotated_series[i]+1] += 1
             
             max_index = np.argmax(occurences)
-            
-            conf[int(label)+1,max_index] += 1
+            if occurences[max_index] / (end-start) > self.segment_percentage: 
+                conf[int(label)+1,max_index] += 1
+            else:
+                conf[int(label)+1,0] += 1
             
         return conf       
     

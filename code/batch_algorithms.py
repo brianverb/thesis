@@ -6,7 +6,6 @@ kabsch = [True, False]
 preprocess = [True, False]
 rotations = [""]
 
-
 def run_each_exercise_and_subject():
     results = np.zeros(2,5,8)
     for subject in range(0,4):

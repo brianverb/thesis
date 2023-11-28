@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from itertools import groupby
 
 class dtw_windowed:
-    def __init__(self, series, templates, annotation_margin=0, scaling=True, max_distance=25, max_matches=30):
+    def __init__(self, series, templates, annotation_margin=0, scaling=True, max_distance=0.5, max_matches=30):
         self.series = series
         self.series_length = len(series)
         self.templates = templates

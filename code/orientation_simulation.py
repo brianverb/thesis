@@ -14,8 +14,16 @@ class orientation_simulation:
     def reset_angles(self):
         self.angles = np.ones(self.series.shape) 
 
-    def create_uniform_rotation(self, angle):
-        self.angles = np.full(self.series.shape, angle)
+    def create_uniform_random_rotation(self):
+        x_angle = random.randint(-180, 180)
+        y_angle = random.randint(-180, 180)
+        z_angle = random.randint(-180, 180)
+
+        self.angles =  np.array([np.full(self.series.shape[0], x_angle), np.full(self.series.shape[0], y_angle), np.full(self.series.shape[0], z_angle)])
+        
+        self.apply_single_rotation(x_angle, y_angle, z_angle)
+        return x_angle, y_angle, z_angle, self.rotated_series
+        
     
     def create_angles_random_walk(self):
         for r in range(0,2):            
@@ -59,3 +67,8 @@ class orientation_simulation:
         for i in range(0, len(self.series)):
             rot_matrix = self.create_rotation_matrix(self.angles[i, :])
             self.rotated_series[i, :] = (rot_matrix @ self.rotated_series[i, :].T ).T
+
+    def apply_single_rotation(self, x_angle, y_angle, z_angle):
+        rot_matrix = self.create_rotation_matrix([x_angle, y_angle, z_angle])
+        self.rotated_series = (rot_matrix @ self.rotated_series.T ).T
+        print(rot_matrix)

@@ -18,7 +18,7 @@ sensor = 1
 templates, time_series = subjects[subject][exercise][sensor]
 
 preprocessor = preproces.preprocessor(series=time_series, templates=templates)
-preprocessor.process()
+time_series = preprocessor.process()
 
 simulation = orsim.orientation_simulation(time_series, 1,1,3)
 simulation.angles = np.load('rotation_150_degrees.npy')
@@ -28,12 +28,12 @@ simulation.apply_rotation()
 time_series = simulation.rotated_series
 
 #Use DTW to recognize every occurence of an exercise
-DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=50, max_matches=30,annotation_margin=0)
+DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=0.5, max_matches=30,annotation_margin=0)
 DTW.find_matches(k=False, steps=1)
 #DTW.find_matches_svd(steps=10)
 #DTW.plot_matches()
 DTW.order_matches()
-DTW.annotate_series_max_matches_expected_matched_segments()
+DTW.annotate_series_max_distance()
 
 ground_truth = loader.Loading.get_ground_truth_labels(self=l, subject=subject,exercise=exercise)
 
