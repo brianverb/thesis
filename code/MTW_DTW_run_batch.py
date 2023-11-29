@@ -14,9 +14,9 @@ def run(subject, exercise, unit, rotation_file, preprocess, kabsch):
 
     time_series = apply_rotation(time_series, rotation_file)
 
-    classificaiton_indices = segment_time_series(time_series, templates, kabsch)
+    annotated_series = segment_time_series(time_series, templates, kabsch)
     
-    accuracy, confusion_matrix = evaluate_time_series(time_series, classificaiton_indices, ground_truth)
+    accuracy, confusion_matrix = evaluate_time_series(time_series, annotated_series, ground_truth)
     
     return accuracy, confusion_matrix
 
@@ -45,21 +45,15 @@ def segment_time_series(time_series, templates, kabsch):
     DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=50, max_matches=30,annotation_margin=0)
     DTW.find_matches(k=kabsch, steps=1)
     DTW.order_matches()
-    DTW.annotate_series_max_matches_expected_matched_segments()
-
+    return DTW.annotate_series_max_matches_expected_matched_segments()
 
 def evaluate_time_series(time_series, annotated_series, ground_truth):
     MTMM_DTW_EVAL = eval.evaluation(series=time_series, ground_truth=ground_truth)
     MTMM_DTW_EVAL.annotated_series = annotated_series
     MTMM_DTW_EVAL.annotate_ground_truth()
-    MTMM_DTW_EVAL.evaluate()
-
     MTMM_DTW_EVAL.clean_annotations()
-    MTMM_DTW_EVAL.evaluate()
-
-    MTMM_DTW_EVAL.plot_simple_confusion_matrix()
 
     conf = MTMM_DTW_EVAL.simple_confusion_matrix()
-    acc = 0
+    acc = MTMM_DTW_EVAL.simple_accuracy()
     
     return acc, conf

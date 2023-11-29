@@ -19,11 +19,11 @@ class preprocessor:
         return self.series
     
     def remove_idle_parts(self):
-        self.plot_series("Before preprocessing")
+        #self.plot_series("Before preprocessing")
         deviations = self.get_standard_deviation()
-        self.plot_deviations(deviations)
+        #self.plot_deviations(deviations)
         self.remove_low_deviations(deviations)
-        self.plot_series("After preprocessing")
+        #self.plot_series("After preprocessing")
            
     def get_standard_deviation(self):
         deviations = []

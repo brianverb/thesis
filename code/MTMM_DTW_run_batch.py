@@ -54,17 +54,13 @@ def segment_time_series(time_series, templates, kabsch):
     return segmented_series_classification_indices
 
 def evaluate_time_series(time_series, classificaiton_indices, ground_truth):
-    MTMM_DTW_EVAL = eval.evaluation(series=time_series[0], segmented_indices=classificaiton_indices, ground_truth=ground_truth)
+    MTMM_DTW_EVAL = eval.evaluation(series=time_series[:,0], segmented_indices=classificaiton_indices, ground_truth=ground_truth)
     MTMM_DTW_EVAL.annotate_ground_truth()
     MTMM_DTW_EVAL.annotate_timeseries()
-    MTMM_DTW_EVAL.evaluate()
-
     MTMM_DTW_EVAL.clean_annotations()
-    MTMM_DTW_EVAL.annotate_timeseries()
-    MTMM_DTW_EVAL.evaluate()
-
+    
     conf = MTMM_DTW_EVAL.simple_confusion_matrix()
-    acc = 0
+    acc = MTMM_DTW_EVAL.simple_accuracy()
     
     return acc, conf
     

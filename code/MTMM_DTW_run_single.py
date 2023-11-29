@@ -21,7 +21,7 @@ sensor = 1
 templates, time_series = subjects[subject][exercise][sensor]
 
 preprocessor = preproces.preprocessor(series=time_series, templates=templates)
-preprocessor.process()
+time_series = preprocessor.process()
 
 simulation = orsim.orientation_simulation(time_series, 1,1,3)
 simulation.angles = np.load('rotation_150_degrees.npy')

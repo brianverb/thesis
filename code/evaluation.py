@@ -67,14 +67,14 @@ class evaluation:
         labels = [-1,0, 1, 2]
         conf_matrix = confusion_matrix(self.ground_truth_serie, self.annotated_series, labels=labels)
         # Create a heatmap to visualize the confusion matrix
-        plt.figure(figsize=(8, 6))
+        '''plt.figure(figsize=(8, 6))
         sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
             xticklabels=labels,
             yticklabels=labels)
         plt.xlabel('Predicted')
         plt.ylabel('Actual')
         plt.title('Confusion Matrix')
-        plt.show()
+        plt.show()'''
         print(conf_matrix)
         
     def evaluate(self):
@@ -92,6 +92,7 @@ class evaluation:
                 self.annotated_series[index] = label
                 
     def annotate_ground_truth(self):
+
         for (start,end,label) in self.ground_truth:
             for index in range(int(start),int(end+1)):
                 self.ground_truth_serie[index] = int(label)
@@ -134,12 +135,11 @@ class evaluation:
                     new_segments.append((s1,e3, first_label))
                 else:
                     new_segments.append((s1,e1,first_label))
-        print("Amount of removed excess segments: " + str(cleaned_segments))
+        #print("Amount of removed excess segments: " + str(cleaned_segments))
         self.segmented_indices = new_segments
         self.annotate_timeseries()
         
         if(cleaned_segments > 0):
-            
             self.clean_annotations()
     
     def simple_confusion_matrix(self):
@@ -157,6 +157,19 @@ class evaluation:
             
         return conf       
     
+    def simple_accuracy(self):
+        conf = self.simple_confusion_matrix()
+        correct = 0
+        false = 0
+        for i in range (0,conf.shape[0]):
+            for j in range(0,conf.shape[1]):
+                if(i==j):
+                    correct += conf[i,j]
+                else:
+                    false += conf[i,j]    
+        return correct / (correct+false)
+    
+        
     def plot_simple_confusion_matrix(self):
         conf = self.simple_confusion_matrix().astype(int)
         xlabels = ["Missed", 1, 2, 3]

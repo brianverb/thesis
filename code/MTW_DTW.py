@@ -17,7 +17,7 @@ class dtw_windowed:
         self.max_matches = max_matches
         
     def find_matches(self, k=False, steps=1):
-        print("Start finding matches.")
+        #print("Start finding matches.")
         for t in range(0,len(self.templates)):
             template = self.templates[t]
             template_length = len(template)
@@ -30,10 +30,10 @@ class dtw_windowed:
  
                 distance = dtw_ndim.distance(window, template, use_c=True)/ template_length
                 self.matches.append((i,i+template_length,distance,t))
-            print("Matching done for template: " + str(t+1))
+            #print("Matching done for template: " + str(t+1))
     
     def find_matches_svd(self, steps=1):
-        print("Start finding matches.")
+        #print("Start finding matches.")
         for t in range(0,len(self.templates)):
             template = self.templates[t]
             template_length = len(template)
@@ -45,7 +45,7 @@ class dtw_windowed:
                 
                 distance = dtw_ndim.distance(result, template,use_c=True)
                 self.matches.append((i,i+template_length,distance,t))
-            print("Matching done for template: " + str(t+1))
+            #print("Matching done for template: " + str(t+1))
             
     def apply_svd(self, window, principal_components):
         return np.dot(window, principal_components.T)
@@ -137,7 +137,7 @@ class dtw_windowed:
             expected_matched_segments += len(self.templates[i]) * 10
         matched_segments = 0
         index = 0
-        print(expected_matched_segments)
+        #print(expected_matched_segments)
         while matched_segments <= expected_matched_segments:
             (start, end, _, label) = self.ordered_matches[index]
             
@@ -150,5 +150,5 @@ class dtw_windowed:
                     matched_segments +=1
                     self.annotated_series[indice] = label
             index +=1   
-
+        return self.annotated_series
         

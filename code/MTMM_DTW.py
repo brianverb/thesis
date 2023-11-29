@@ -73,14 +73,7 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
             for i in range(s, e+1):
                 time_series[best_match_index][i] = (best_match_index+1)*1000
                 
-    print("max iterations for a bad match counter: " + str(max_iterations_bad_match) + "  bad iteration counter: " + str(iterations_bad_match) + "  iterations: " + str(iterations))
+    #print("max iterations for a bad match counter: " + str(max_iterations_bad_match) + "  bad iteration counter: " + str(iterations_bad_match) + "  iterations: " + str(iterations))
     return time_series, time_series_segment_indexes
 
-'''
-plt.plot(range(0,len(time_series)), time_series[:,1])
-# Add labels and title
-plt.xlabel('Time')
-plt.ylabel('x_acc')
-plt.title('X_accelator over time')
-plt.show()
-'''
+
