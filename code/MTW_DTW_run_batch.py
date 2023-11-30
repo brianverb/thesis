@@ -35,10 +35,11 @@ def load_data(subject, exercise, unit):
 
 def apply_rotation(time_series, rotation_file):
     simulation = orsim.orientation_simulation(time_series)
-    simulation.angles = np.load(rotation_file)
+    angles = np.load(rotation_file)
 
-    simulation.apply_rotation()
-    return simulation.rotated_series
+    simulation.apply_single_rotation(angles[0],angles[1],angles[2])
+    return simulation.rotated_series  
+    
 
 def segment_time_series(time_series, templates, kabsch):
     #Use DTW to recognize every occurence of an exercise

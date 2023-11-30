@@ -30,7 +30,7 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
             serie = time_series[t]
             #print(query.shape)
             #print(serie.shape)
-            sa = subsequence_alignment(query, serie,penalty=0.2, use_c=True)
+            sa = subsequence_alignment(query, serie, use_c=True)
             match = sa.best_match()
                       
             if sa.distance < best_match_distance:
@@ -43,7 +43,7 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
             #plt.close('all')
             
         if best_match_index == None:
-            print("There is no path found that is close enough, we finish early")
+            #print("There is no path found that is close enough, we finish early")
             break
         
         #print("The matched template of the best match is: " + str(best_match_index+1) + "  The best distance is: " + str(best_match_distance))
@@ -73,7 +73,7 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
             for i in range(s, e+1):
                 time_series[best_match_index][i] = (best_match_index+1)*1000
                 
-    #print("max iterations for a bad match counter: " + str(max_iterations_bad_match) + "  bad iteration counter: " + str(iterations_bad_match) + "  iterations: " + str(iterations))
+    print("max iterations for a bad match counter: " + str(max_iterations_bad_match) + "  bad iteration counter: " + str(iterations_bad_match) + "  iterations: " + str(iterations))
     return time_series, time_series_segment_indexes
 
 

@@ -71,4 +71,4 @@ class orientation_simulation:
     def apply_single_rotation(self, x_angle, y_angle, z_angle):
         rot_matrix = self.create_rotation_matrix([x_angle, y_angle, z_angle])
         self.rotated_series = (rot_matrix @ self.rotated_series.T ).T
-        print(rot_matrix)
+        
