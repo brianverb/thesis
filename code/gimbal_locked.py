@@ -30,6 +30,7 @@ x_angle, y_angle, z_angle, rotated_series = simulation.create_uniform_random_rot
 file_name = f"rotation_uniform_angles_{x_angle}_{y_angle}_{z_angle}.npy"
 file_path = os.path.join("code/rotations", file_name)
 
+
 np.save(file_path, [x_angle, y_angle, z_angle])
 
 plt.plot(range(0,len(time_series)), rotated_series)
