@@ -30,7 +30,7 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
             serie = time_series[t]
             #print(query.shape)
             #print(serie.shape)
-            sa = subsequence_alignment(query, serie, use_c=True)
+            sa = subsequence_alignment(query, serie,penalty=7, use_c=True)
             match = sa.best_match()
                       
             if sa.distance < best_match_distance:
@@ -40,7 +40,6 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
             matches.append(match)
             #dtwvis.plot_warpingpaths(query, serie, sa.warping_paths(), match.path, figure=fig,showlegend=True)
             #plt.show()
-            #plt.close('all')
             
         if best_match_index == None:
             #print("There is no path found that is close enough, we finish early")

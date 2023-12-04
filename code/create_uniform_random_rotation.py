@@ -3,6 +3,8 @@ import orientation_simulation as orsim
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import kabsch 
+from dtaidistance import dtw_ndim
 
 #set up the data
 l = loader.Loading("code\data")
@@ -36,3 +38,39 @@ plt.xlabel('Time')
 plt.ylabel('x_acc')
 plt.title('rotated_series over time')
 plt.show()
+
+
+
+for i in range(0,len(templates)):
+    template = templates[i]
+    template_length = len(template)
+    
+    window = rotated_series[0:template_length]
+    
+    plt.plot(range(0,len(window)), template)
+    plt.xlabel('Time')
+    plt.ylabel('x_acc')
+    plt.title('template: ' + str(i))
+    plt.show()
+    
+    distance = dtw_ndim.distance(window, template, use_c=True)
+
+    plt.plot(range(0,len(window)), rotated_series[0:template_length])
+    plt.xlabel('Time')
+    plt.ylabel('x_acc')
+    plt.title('rotated series: ' + str(i) + "  distance: " + str(distance))
+    plt.show()
+    
+    _, R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), True)
+    window = np.dot(window,R)
+    window = np.array(window)
+    
+    distance = dtw_ndim.distance(window, template, use_c=True)
+
+    plt.plot(range(0,len(window)), window)
+    plt.xlabel('Time')
+    plt.ylabel('x_acc')
+    plt.title('Kabsch rotated serie: ' + str(i) + "  distance: " + str(distance))
+    plt.show()
+    
+ 

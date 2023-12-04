@@ -37,11 +37,11 @@ plt.ylabel('Accel')
 plt.title('Rotated time-series')
 plt.show()
 
-time_series = apply_rotation(time_series=time_series, rotation_file=rotation_file_path)
+#time_series = apply_rotation(time_series=time_series, rotation_file=rotation_file_path)
 
 #Use DTW to recognize every occurence of an exercise
 DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=0.5, max_matches=30,annotation_margin=0)
-DTW.find_matches(k=True, steps=1)
+DTW.find_matches(k=False, steps=1)
 #DTW.find_matches_svd(steps=10)
 #DTW.plot_matches()
 DTW.order_matches()
