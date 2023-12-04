@@ -25,13 +25,15 @@ plt.ylabel('x_acc')
 plt.title('X_accelator over time')
 plt.show()
 
-simulation = orsim.orientation_simulation(time_series, random_changes_amount=1, degree_change=0,degree_multiplicator=0)
-x_angle, y_angle, z_angle, rotated_series = simulation.create_uniform_random_rotation()
-file_name = f"rotation_uniform_angles_{x_angle}_{y_angle}_{z_angle}.npy"
+simulation = orsim.orientation_simulation()
+rot_M = simulation.create_random_rotation_matrix()
+print(rot_M)
+rotated_series = simulation.apply_rotation(series=time_series,rotation_matrix=rot_M)
+file_name = f"rotation_gram_schmidt_3.npy"
 file_path = os.path.join("code/rotations", file_name)
 
 
-np.save(file_path, [x_angle, y_angle, z_angle])
+np.save(file_path, rot_M)
 
 plt.plot(range(0,len(time_series)), rotated_series)
 # Add labels and title
@@ -39,8 +41,6 @@ plt.xlabel('Time')
 plt.ylabel('x_acc')
 plt.title('rotated_series over time')
 plt.show()
-
-
 
 for i in range(0,len(templates)):
     template = templates[i]
