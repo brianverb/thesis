@@ -45,7 +45,7 @@ for i in range(0,len(templates)):
     template = templates[i]
     template_length = len(template)
     
-    window = rotated_series[0:template_length]
+    window = rotated_series[12:12+template_length]
     
     plt.plot(range(0,len(window)), template)
     plt.xlabel('Time')
@@ -55,7 +55,7 @@ for i in range(0,len(templates)):
     
     distance = dtw_ndim.distance(window, template, use_c=True)
 
-    plt.plot(range(0,len(window)), rotated_series[0:template_length])
+    plt.plot(range(0,len(window)), rotated_series[12:12+template_length])
     plt.xlabel('Time')
     plt.ylabel('x_acc')
     plt.title('rotated series: ' + str(i) + "  distance: " + str(distance))
