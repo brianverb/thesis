@@ -24,23 +24,19 @@ def load_data(subject, exercise, unit):
     l = loader.Loading("code\data")
     l.load_all()
     subjects = l.time_series
-    subject = 2
-    exercise = 0
-    unit = 1
-
+    
     templates, time_series = subjects[subject][exercise][unit]
     ground_truth = loader.Loading.get_ground_truth_labels(self=l, subject=subject,exercise=exercise)
 
     return templates, time_series, ground_truth
 
 def apply_rotation(time_series, rotation_file):
-    simulation = orsim.orientation_simulation(time_series)
-    angles = np.load(rotation_file)
+    simulation = orsim.orientation_simulation()
+    rotation_matrix = np.load(rotation_file)
 
-    simulation.apply_single_rotation(angles[0],angles[1],angles[2])
-    return simulation.rotated_series  
+    rotated_series = simulation.apply_rotation(series=time_series, rotation_matrix=rotation_matrix)
+    return rotated_series 
     
-
 def segment_time_series(time_series, templates, kabsch):
     #Use DTW to recognize every occurence of an exercise
     DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=50, max_matches=30,annotation_margin=0)

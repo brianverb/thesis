@@ -43,7 +43,7 @@ class dtw_windowed:
                 window = self.series[i:i+template_length]
                 result = self.apply_svd(window, principal_components)
                 
-                distance = dtw_ndim.distance(result, template,use_c=True)
+                distance = dtw_ndim.distance(result, template, penalty=5, use_c=True)
                 self.matches.append((i,i+template_length,distance,t))
             #print("Matching done for template: " + str(t+1))
             
@@ -117,6 +117,7 @@ class dtw_windowed:
                         self.annotated_series[index] = label
             else:
                 break
+        return self.annotated_series
     
     def annotate_series_max_matches(self):
         index = 0
@@ -130,6 +131,7 @@ class dtw_windowed:
                 if(self.annotated_series[index] == -1):
                     self.annotated_series[index] = label
             index +=1   
+        return self.annotated_series
             
     def annotate_series_max_matches_expected_matched_segments(self):
         expected_matched_segments = 0

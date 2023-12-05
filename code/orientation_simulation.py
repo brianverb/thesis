@@ -96,7 +96,7 @@ class orientation_simulation:
         return None
         
     def apply_rotation(self, series, rotation_matrix, start=0):
-        result = (rotation_matrix @ series[start:, :].T ).T
+        result = np.dot(rotation_matrix, series[start:, :].T).T
         return result
 
     def gram_schmidt(self, A):

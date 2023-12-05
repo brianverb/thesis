@@ -10,11 +10,11 @@ import preprocessing as preproces
 import os
 
 def apply_rotation(time_series, rotation_file):
-    simulation = orsim.orientation_simulation(time_series)
-    angles = np.load(rotation_file)
+    simulation = orsim.orientation_simulation()
+    rotation_matrix = np.load(rotation_file)
 
-    simulation.apply_single_rotation(angles[0],angles[1],angles[2])
-    return simulation.rotated_series  
+    rotated_series = simulation.apply_rotation(series=time_series, rotation_matrix=rotation_matrix)
+    return rotated_series 
     
 #set up the data
 l = loader.Loading("code\data")

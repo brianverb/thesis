@@ -8,7 +8,6 @@ import preprocessing as prep
 
 def run(subject, exercise, unit, rotation_file, preprocess, kabsch):
     templates, time_series, ground_truth = load_data(subject, exercise, unit)
-
     
     if preprocess:
         preprocessor = prep.preprocessor(series=time_series, templates=templates)
@@ -26,9 +25,6 @@ def load_data(subject, exercise, unit):
     l = loader.Loading("code\data")
     l.load_all()
     subjects = l.time_series
-    subject = 2
-    exercise = 0
-    unit = 1
 
     templates, time_series = subjects[subject][exercise][unit]
     ground_truth = loader.Loading.get_ground_truth_labels(self=l, subject=subject,exercise=exercise)
@@ -36,21 +32,20 @@ def load_data(subject, exercise, unit):
     return templates, time_series, ground_truth
 
 def apply_rotation(time_series, rotation_file):
-    simulation = orsim.orientation_simulation(time_series)
-    angles = np.load(rotation_file)
+    simulation = orsim.orientation_simulation()
+    rotation_matrix = np.load(rotation_file)
 
-    simulation.apply_single_rotation(angles[0],angles[1],angles[2])
-    return simulation.rotated_series  
+    rotated_series = simulation.apply_rotation(series=time_series, rotation_matrix=rotation_matrix)
+    return rotated_series 
     
-
 def segment_time_series(time_series, templates, kabsch):
     if kabsch:
         #Use the kabsch algorithm to transform the timeseries to optimal rotated series based on the templates
         time_series = kabsch_time.transform(templates,time_series,scaling=False)
-        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,min_path_length=20,max_iterations=300, max_iterations_bad_match = 30)
+        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,min_path_length=50,max_iterations=300, max_iterations_bad_match = 30)
     else:
         time_series = [time_series.copy() for _ in range(3)]
-        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,min_path_length=20,max_iterations=2000, max_iterations_bad_match = 400)
+        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,min_path_length=50,max_iterations=2000, max_iterations_bad_match = 400)
     
     return segmented_series_classification_indices
 
@@ -64,4 +59,3 @@ def evaluate_time_series(time_series, classificaiton_indices, ground_truth):
     acc = MTMM_DTW_EVAL.simple_accuracy()
     
     return acc, conf
-    

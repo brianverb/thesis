@@ -128,13 +128,14 @@ class evaluation:
             if first_label == third_label and second_label != first_label:
                 #print("found a sandwiched segment")
                 #print(str(((e1-s1) + (e3-s3))) + " / " + str(((e1-s1) + (e2-s2) + (e3-s3))) + " = " + str(((e1-s1) + (e3-s3)) / ((e1-s1) + (e2-s2) + (e3-s3))))
-                if (((e1-s1) + (e3-s3)) / ((e1-s1) + (e2-s2) + (e3-s3))) > self.segment_percentage and (e2-s2) < 50:
-                    #print("cleaning up segment.")
-                    index += 1
-                    cleaned_segments += 2
-                    new_segments.append((s1,e3, first_label))
-                else:
-                    new_segments.append((s1,e1,first_label))
+                if(((e1-s1) + (e2-s2) + (e3-s3)) >0):
+                    if (((e1-s1) + (e3-s3)) / ((e1-s1) + (e2-s2) + (e3-s3))) > self.segment_percentage and (e2-s2) < 50:
+                        #print("cleaning up segment.")
+                        index += 1
+                        cleaned_segments += 2
+                        new_segments.append((s1,e3, first_label))
+                    else:
+                        new_segments.append((s1,e1,first_label))
         #print("Amount of removed excess segments: " + str(cleaned_segments))
         self.segmented_indices = new_segments
         self.annotate_timeseries()
