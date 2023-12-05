@@ -8,16 +8,15 @@ kabsch = [True, False]
 preprocess = [True, False]
 rotations_directory = "code/rotations"
 rotations = os.listdir(rotations_directory)
-subjects = 1
-exercises = 1
+subjects = 5
+exercises = 8  
 results_MTMM = np.zeros((subjects, exercises, len(rotations), len(kabsch), len(preprocess)))
 results_MTW = np.zeros((subjects, exercises, len(rotations), len(kabsch), len(preprocess)))
     
 def run_each_exercise_and_subject():
     for algorithm in range(0, 2):
-        for exercise in range(0, exercises):
-            for subject in range(0, subjects):
-                print("subject: " + str(subject+1) + "  exercise: " + str(exercise+1) + "  algorithm: " + str(algorithm))
+        for subject in range(0, subjects):
+            for exercise in range(0, exercises):
                 run_each_execution_setting(subject, exercise, 1, algorithm)
                     
         print(results_MTMM)
@@ -39,7 +38,7 @@ def run_each_execution_setting(subject, exercise, unit, algorithm):
             kabsch_index = 0
             
             for k in kabsch:
-                print("rotation_file: " + str(rotation_file) + "  preprocess: " + str(p) + "  kabsch: " + str(k) +"   subject: " + str(subject) + "  exercise: " + str(exercise) + "  algorithm: " + str(algorithm) )
+                print("rotation_file: " + str(rotation_file) + "  preprocess: " + str(p) + "  kabsch: " + str(k) +"   subject: " + str(subject+1) + "  exercise: " + str(exercise+1) + "  algorithm: " + str(algorithm) )
                 if(algorithm == 0):  
                     results_MTMM[subject, exercise, rotation_index, preprocess_index, kabsch_index],_ = MTMM.run(subject=subject, exercise=exercise, unit=unit, rotation_file=rotation_file_path, preprocess=p, kabsch=k)
                 else:
@@ -51,22 +50,29 @@ def run_each_execution_setting(subject, exercise, unit, algorithm):
         rotation_index += 1
 
 def print_results():
+    print_results_MTMM()
+    print_results_MTW()
+
+def print_results_MTMM():
     results_MTMM = np.load("output_MTMM.npy")
-    results_MTW = np.load("output_MTW.npy")
 
+    #print(results_MTMM)
     print("MTMM averages out at: " + str(np.mean(results_MTMM)))
-    print("MTW averages out at: " + str(np.mean(results_MTW)))
-
-
     print("MTMM Kabsch Preprocess: " + str(np.mean(results_MTMM[:, :, :, 0, 0])))
     print("MTMM  Preprocess: " + str(np.mean(results_MTMM[:, :, :, 0, 1])))
     print("MTMM Kabsch : " + str(np.mean(results_MTMM[:, :, :, 1, 0])))
     print("MTMM  : " + str(np.mean(results_MTMM[:, :, :, 1, 1])))
-
+    
+def print_results_MTW():
+    results_MTW = np.load("output_MTW.npy")
+    
+    #print(results_MTW)
+    print("MTW averages out at: " + str(np.mean(results_MTW)))
     print("MTW Kabsch Preprocess: " + str(np.mean(results_MTW[:, :, :, 0, 0])))
     print("MTW  Preprocess: " + str(np.mean(results_MTW[:, :, :, 0, 1])))
     print("MTW Kabsch : " + str(np.mean(results_MTW[:, :, :, 1, 0])))
     print("MTW  : " + str(np.mean(results_MTW[:, :, :, 1, 1])))
     
-#run_each_exercise_and_subject()
+
+run_each_exercise_and_subject()
 print_results()
