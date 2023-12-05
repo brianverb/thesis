@@ -25,7 +25,7 @@ class dtw_windowed:
                 window = self.series[i:i+template_length]
                 if(k):
                     _, R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), self.scaling)
-                    window = np.dot(window,R)
+                    window = np.dot(R, window.T).T
                     window = np.array(window)
  
                 distance = dtw_ndim.distance(window, template, use_c=True)

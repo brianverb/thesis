@@ -8,8 +8,8 @@ kabsch = [True, False]
 preprocess = [True, False]
 rotations_directory = "code/rotations"
 rotations = os.listdir(rotations_directory)
-subjects = 5
-exercises = 8
+subjects = 1
+exercises = 1
 results_MTMM = np.zeros((subjects, exercises, len(rotations), len(kabsch), len(preprocess)))
 results_MTW = np.zeros((subjects, exercises, len(rotations), len(kabsch), len(preprocess)))
     
@@ -17,7 +17,7 @@ def run_each_exercise_and_subject():
     for algorithm in range(0, 2):
         for exercise in range(0, exercises):
             for subject in range(0, subjects):
-                print("subject: " + str(subject) + "  exercise: " + str(exercise) + "  algorithm: " + str(algorithm))
+                print("subject: " + str(subject+1) + "  exercise: " + str(exercise+1) + "  algorithm: " + str(algorithm))
                 run_each_execution_setting(subject, exercise, 1, algorithm)
                     
         print(results_MTMM)
@@ -50,7 +50,23 @@ def run_each_execution_setting(subject, exercise, unit, algorithm):
             
         rotation_index += 1
 
-def calculate_averages():
-    return None
+def print_results():
+    results_MTMM = np.load("output_MTMM.npy")
+    results_MTW = np.load("output_MTW.npy")
 
-run_each_exercise_and_subject()
+    print("MTMM averages out at: " + str(np.mean(results_MTMM)))
+    print("MTW averages out at: " + str(np.mean(results_MTW)))
+
+
+    print("MTMM Kabsch Preprocess: " + str(np.mean(results_MTMM[:, :, :, 0, 0])))
+    print("MTMM  Preprocess: " + str(np.mean(results_MTMM[:, :, :, 0, 1])))
+    print("MTMM Kabsch : " + str(np.mean(results_MTMM[:, :, :, 1, 0])))
+    print("MTMM  : " + str(np.mean(results_MTMM[:, :, :, 1, 1])))
+
+    print("MTW Kabsch Preprocess: " + str(np.mean(results_MTW[:, :, :, 0, 0])))
+    print("MTW  Preprocess: " + str(np.mean(results_MTW[:, :, :, 0, 1])))
+    print("MTW Kabsch : " + str(np.mean(results_MTW[:, :, :, 1, 0])))
+    print("MTW  : " + str(np.mean(results_MTW[:, :, :, 1, 1])))
+    
+#run_each_exercise_and_subject()
+print_results()

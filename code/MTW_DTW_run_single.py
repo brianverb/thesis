@@ -44,7 +44,7 @@ plt.show()
 DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=50, max_matches=30,annotation_margin=0)
 DTW.find_matches(k=True, steps=1)
 DTW.order_matches()
-DTW.annotate_series_max_distance()
+DTW.annotate_series_max_matches_expected_matched_segments()
 
 ground_truth = loader.Loading.get_ground_truth_labels(self=l, subject=subject,exercise=exercise)
 

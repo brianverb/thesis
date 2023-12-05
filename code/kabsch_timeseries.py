@@ -35,7 +35,7 @@ def kabsch_transform_first_window(template, template_length, time_series, transf
     already_masked = np.any(np.isinf(window))
     if(not already_masked):
         _, ret_R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), scaling)
-        result = np.dot(window,ret_R)
+        result = np.dot(ret_R, window.T).T
     else:
         result= window
     _, ret_R, _ = kabsch.rigid_transform_3D(np.matrix(template),np.matrix(window), scaling)
@@ -53,21 +53,10 @@ def kabsch_transform_sliding_window(template, template_length, time_series, time
         already_masked = np.any(np.isinf(window))
         if(not already_masked):
             _, ret_R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), scaling)
-            result = np.dot(window,ret_R)
+            result = np.dot(ret_R, window.T).T
         else:
             result= window
             
-        index = w + template_length//2
-        transformed_timeserie[index] = result[template_length//2]
-    return result
-
-#TODO
-def kabsch_transform_sliding_window_with_ids(template, template_length, time_series, time_series_length, transformed_timeserie, scaling):
-    #Slide the window for all of the middle values
-    for w in range(0,time_series_length-template_length+1):
-        window = time_series[w:w+template_length]
-        _, ret_R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), scaling)
-        result = np.dot(window,ret_R)
         index = w + template_length//2
         transformed_timeserie[index] = result[template_length//2]
     return result
