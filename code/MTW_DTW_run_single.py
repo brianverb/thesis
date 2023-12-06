@@ -25,8 +25,8 @@ sensor = 1
 # get accelerometer data of first subject performing the second exercises using the second sensor
 templates, time_series = subjects[subject][exercise][sensor]
 
-preprocessor = preproces.preprocessor(series=time_series, templates=templates)
-time_series = preprocessor.process()
+#preprocessor = preproces.preprocessor(series=time_series, templates=templates)
+#time_series = preprocessor.process()
 
 rotation_file_path = os.path.join("code/rotations", "rotation_gram_schmidt_1.npy")
 
@@ -41,7 +41,7 @@ plt.show()
 
 
 #Use DTW to recognize every occurence of an exercise
-DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=50, max_matches=30,annotation_margin=0)
+DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=27.5, max_matches=30,annotation_margin=0)
 DTW.find_matches(k=True, steps=1)
 DTW.order_matches()
 DTW.annotate_series_max_matches_expected_matched_segments()
@@ -49,7 +49,7 @@ DTW.annotate_series_max_matches_expected_matched_segments()
 ground_truth = loader.Loading.get_ground_truth_labels(self=l, subject=subject,exercise=exercise)
 
 
-MTMM_DTW_EVAL = eval.evaluation(series=time_series, ground_truth=ground_truth)
+MTMM_DTW_EVAL = eval.evaluation(series=time_series, ground_truth=ground_truth, templates=templates)
 MTMM_DTW_EVAL.annotated_series = DTW.annotated_series
 MTMM_DTW_EVAL.annotate_ground_truth()
 MTMM_DTW_EVAL.evaluate()
@@ -85,3 +85,7 @@ MTMM_DTW_EVAL.plot_simple_confusion_matrix()
 DTW.plot_distances_points(ground_truths=MTMM_DTW_EVAL.ground_truth)
 
 
+acc = MTMM_DTW_EVAL.exercise_accuracy()  
+
+print(MTMM_DTW_EVAL.exercise_confusion_matrix())
+print(acc)

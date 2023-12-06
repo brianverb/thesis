@@ -12,7 +12,7 @@ def get_path_indices_from_array(series, matching_path):
     matching_path = np.array(matching_path)
     return matching_path      
 
-def segment(templates, time_series,  max_iterations, max_iterations_bad_match,min_path_length=10, margin=0, max_distance =300):
+def segment(templates, time_series,  max_iterations, max_iterations_bad_match,min_path_length=0.1, margin=0, max_distance=1000):
     iterations = 0
     iterations_bad_match = 0
     time_series_segment_indexes = []
@@ -25,12 +25,10 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
         best_match_distance = max_distance
         
         for t in range(0,3):
-            #fig = plt.figure(t)
+            fig = plt.figure(t)
             query = templates[t]
             serie = time_series[t]
-            #print(query.shape)
-            #print(serie.shape)
-            sa = subsequence_alignment(query, serie,penalty=20, use_c=True)
+            sa = subsequence_alignment(query, serie, penalty=10, use_c=True)
             match = sa.best_match()
                       
             if sa.distance < best_match_distance:
@@ -45,20 +43,20 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
             #print("There is no path found that is close enough, we finish early")
             break
         
-        #print("The matched template of the best match is: " + str(best_match_index+1) + "  The best distance is: " + str(best_match_distance))
+        print("The matched template of the best match is: " + str(best_match_index+1) + "  The best distance is: " + str(best_match_distance))
         best_match_path = get_path_indices_from_array(series=time_series[best_match_index],matching_path= matches[best_match_index].path)
 
         distinct_path, _, _ = np.unique(best_match_path, axis=0, return_counts=True, return_index=True)
         length_of_best_path = len(distinct_path)
-        #print("The length of the best path is: " + str(length_of_best_path))
+        print("The length of the best path is: " + str(length_of_best_path))
         
         s, e = matches[best_match_index].segment
         #print("start of segment to match: " + str(s))
         #print("end of segment to match: " + str(e))
         s = int(s + (e-s)*margin//2)
         e = int(e - (e-s)*margin//2)
-        if(length_of_best_path > min_path_length):  
-            #print("the path length is: " + str(length_of_best_path) + " so the time series goes *100")
+        if(length_of_best_path/len(templates[t]) > min_path_length):  
+            print("the path length is: " + str(length_of_best_path) + " so the time series goes *100")
             iterations_bad_match = 0
             for i in range(s, e+1):
                 for ts in range(0,3):
@@ -66,7 +64,7 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
             time_series_segment_indexes.append((s,e,best_match_index))
                 
         else: 
-            #print("the path length is: " + str(length_of_best_path) + " so the time series goes *1000")
+            print("the path length is: " + str(length_of_best_path) + " so the time series goes *1000")
             iterations_bad_match += 1
             #print("Bad match counter: " + str(iterations_bad_match))
             for i in range(s, e+1):

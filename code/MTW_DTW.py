@@ -119,9 +119,19 @@ class dtw_windowed:
                 break
         return self.annotated_series
     
+    def remove_all_overlapping_matches(self, start, end):
+        new_matches = []
+        for (start_m, end_m, distance_m, label_m) in self.ordered_matches:
+            overlap_length = max(0, min(end, end_m) - max(start, start_m))
+            length_m = end_m - start_m
+            length = end - start
+            
+            if (overlap_length / min(length_m, length)) == 0:
+                new_matches.append((start_m, end_m, distance_m, label_m))
+    
     def annotate_series_max_matches(self):
         index = 0
-        while index <= self.max_matches:
+        while index <= self.max_matches and index <= len(self.ordered_matches):
             (start, end, _, label) = self.ordered_matches[index]
             length_of_segment = end-start
             start_margined = start + int(length_of_segment*self.annotation_margin//2)
@@ -130,6 +140,8 @@ class dtw_windowed:
             for index in range(start_margined,end_margined+1):
                 if(self.annotated_series[index] == -1):
                     self.annotated_series[index] = label
+            
+            self.remove_all_overlapping_matches(start, end)
             index +=1   
         return self.annotated_series
             

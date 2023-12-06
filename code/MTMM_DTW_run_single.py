@@ -28,10 +28,10 @@ sensor = 1
 # get accelerometer data of first subject performing the second exercises using the second sensor
 templates, time_series = subjects[subject][exercise][sensor]
 
-preprocessor = preproces.preprocessor(series=time_series, templates=templates)
-time_series = preprocessor.process()
+#preprocessor = preproces.preprocessor(series=time_series, templates=templates)
+#time_series = preprocessor.process()
 
-rotation_file_path = os.path.join("code/rotations", "rotation_uniform_angles_165_-117_-93.npy")
+rotation_file_path = os.path.join("code/rotations", "rotation_gram_schmidt_1.npy")
 
 plt.plot(range(0,len(time_series)), time_series)
 # Add labels and title
@@ -66,7 +66,7 @@ time_series = [time_series.copy() for _ in range(3)]
 
 #Use DTW to recognize every occurence of an exercise
 #(segmented_series, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,min_path_length=20,max_iterations=300, max_iterations_bad_match = 30)
-(segmented_series, segmented_series_classification_indices) = dtw.segment(templates,time_series=transformed_series,min_path_length=20,max_iterations=2000, max_iterations_bad_match = 400)
+(segmented_series, segmented_series_classification_indices) = dtw.segment(templates,time_series=transformed_series, max_iterations=2000, max_iterations_bad_match = 400)
 
 ground_truth = loader.Loading.get_ground_truth_labels(self=l, subject=subject,exercise=exercise)
 #MTMM_DTW_EVAL = eval.evaluation(series=time_series[0], segmented_indices=segmented_series_classification_indices, ground_truth=ground_truth)

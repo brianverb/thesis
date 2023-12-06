@@ -17,9 +17,9 @@ def run(subject, exercise, unit, rotation_file, preprocess, kabsch):
 
     classificaiton_indices = segment_time_series(time_series, templates, kabsch)
     
-    accuracy, confusion_matrix = evaluate_time_series(time_series, classificaiton_indices, ground_truth)
+    accuracy = evaluate_time_series(time_series, classificaiton_indices, ground_truth)
     
-    return accuracy, confusion_matrix
+    return accuracy
     
 def load_data(subject, exercise, unit):
     l = loader.Loading("code\data")
@@ -42,10 +42,10 @@ def segment_time_series(time_series, templates, kabsch):
     if kabsch:
         #Use the kabsch algorithm to transform the timeseries to optimal rotated series based on the templates
         time_series = kabsch_time.transform(templates,time_series,scaling=False)
-        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,min_path_length=50,max_iterations=300, max_iterations_bad_match = 30)
+        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,max_iterations=300, max_iterations_bad_match = 30)
     else:
         time_series = [time_series.copy() for _ in range(3)]
-        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,min_path_length=50,max_iterations=2000, max_iterations_bad_match = 400)
+        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,max_iterations=2000, max_iterations_bad_match = 400)
     
     return segmented_series_classification_indices
 
@@ -53,9 +53,9 @@ def evaluate_time_series(time_series, classificaiton_indices, ground_truth):
     MTMM_DTW_EVAL = eval.evaluation(series=time_series[:,0], segmented_indices=classificaiton_indices, ground_truth=ground_truth)
     MTMM_DTW_EVAL.annotate_ground_truth()
     MTMM_DTW_EVAL.annotate_timeseries()
+
     MTMM_DTW_EVAL.clean_annotations()
+
+    acc = MTMM_DTW_EVAL.exercise_accuracy()
     
-    conf = MTMM_DTW_EVAL.simple_confusion_matrix()
-    acc = MTMM_DTW_EVAL.simple_accuracy()
-    
-    return acc, conf
+    return acc

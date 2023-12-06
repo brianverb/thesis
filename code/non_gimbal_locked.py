@@ -30,7 +30,7 @@ rot_M = simulation.create_random_rotation_matrix()
 print(rot_M)
 rotated_series = simulation.apply_rotation(series=time_series,rotation_matrix=rot_M)
 file_name = f"rotation_gram_schmidt_x.npy"
-file_path = os.path.join("code/rotations", file_name)
+file_path = os.path.join("code/old_rotations", file_name)
 
 
 np.save(file_path, rot_M)
