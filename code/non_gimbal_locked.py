@@ -64,6 +64,19 @@ for i in range(0,len(templates)):
     plt.title('window')
     plt.show()
     
+    _, R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(time_series[12:12+template_length]), True)
+    result = np.dot(R,time_series[12:12+template_length].T)
+    result = np.array(result.T)
+    
+    ed_distance = euclidean_distance_3d_timeseries(result, template)
+    dtw_distance = dtw_ndim.distance(result, template, use_c=True)
+    
+    plt.plot(range(0,len(window)), result)
+    plt.xlabel('Time')
+    plt.ylabel('x_acc')
+    plt.title('kabsch on regular timeseries: ' + str(i) + "  euclidian distance: " + str(ed_distance) +  "  dtw distance: " + str(dtw_distance))
+    plt.show()
+    
     ed_distance = euclidean_distance_3d_timeseries(time_series[12:12+template_length], template)
     dtw_distance = dtw_ndim.distance(time_series[12:12+template_length], template, use_c=True)
     

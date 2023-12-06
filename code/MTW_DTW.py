@@ -119,30 +119,40 @@ class dtw_windowed:
                 break
         return self.annotated_series
     
-    def remove_all_overlapping_matches(self, start, end):
+    def remove_all_overlapping_matches(self, start, end, matches):
+        print("start: " + str(start) + "  end: " + str(end))
         new_matches = []
-        for (start_m, end_m, distance_m, label_m) in self.ordered_matches:
+        removed_matches = 0
+        for (start_m, end_m, distance_m, label_m) in matches:
             overlap_length = max(0, min(end, end_m) - max(start, start_m))
-            length_m = end_m - start_m
-            length = end - start
             
-            if (overlap_length / min(length_m, length)) == 0:
+            if overlap_length == 0:
                 new_matches.append((start_m, end_m, distance_m, label_m))
+            else:
+                removed_matches += 1
+        print("removed matches: " + str(removed_matches))
+        return new_matches
     
     def annotate_series_max_matches(self):
         index = 0
-        while index <= self.max_matches and index <= len(self.ordered_matches):
-            (start, end, _, label) = self.ordered_matches[index]
+        matches = self.ordered_matches
+        while index <= self.max_matches:
+            (start, end, _, label) = matches[index]
             length_of_segment = end-start
             start_margined = start + int(length_of_segment*self.annotation_margin//2)
             end_margined = end - int(length_of_segment*self.annotation_margin//2)
 
-            for index in range(start_margined,end_margined+1):
-                if(self.annotated_series[index] == -1):
-                    self.annotated_series[index] = label
+            for i in range(start_margined,end_margined+1):
+                if(self.annotated_series[i] == -1):
+                    self.annotated_series[i] = label
             
-            self.remove_all_overlapping_matches(start, end)
+            matches = self.remove_all_overlapping_matches(start, end, matches)
             index +=1   
+
+            if index == len(matches)-1:
+                print("not enough matches left")
+                break
+            
         return self.annotated_series
             
     def annotate_series_max_matches_expected_matched_segments(self):
