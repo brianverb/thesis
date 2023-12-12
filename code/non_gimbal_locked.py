@@ -21,8 +21,8 @@ templates, time_series = subjects[subject][exercise][sensor]
 plt.plot(range(0,len(time_series)), time_series)
 # Add labels and title
 plt.xlabel('Time')
-plt.ylabel('x_acc')
-plt.title('X_accelator over time')
+plt.ylabel('Accelerator values')
+plt.title('Regular time serie')
 plt.show()
 
 simulation = orsim.orientation_simulation()
@@ -38,8 +38,8 @@ np.save(file_path, rot_M)
 plt.plot(range(0,len(time_series)), rotated_series)
 # Add labels and title
 plt.xlabel('Time')
-plt.ylabel('x_acc')
-plt.title('rotated_series over time')
+plt.ylabel('Accelerator values')
+plt.title('Rotated serie')
 plt.show()
 
 def euclidean_distance_3d_timeseries(series_a, series_b):
@@ -60,8 +60,17 @@ for i in range(0,len(templates)):
     plt.plot(range(0,len(window)), time_series[12:12+template_length])
     # Add labels and title
     plt.xlabel('Time')
-    plt.ylabel('x_acc')
-    plt.title('window')
+    plt.ylabel('Accelerator values')
+    plt.title('Window of regular serie')
+    plt.show()
+    
+    ed_distance = euclidean_distance_3d_timeseries(time_series[12:12+template_length], template)
+    dtw_distance = dtw_ndim.distance(time_series[12:12+template_length], template, use_c=True)
+    
+    plt.plot(range(0,len(window)), template)
+    plt.xlabel('Time')
+    plt.ylabel('Accelerator values')
+    plt.title('Template compared to regular window: ' + str(i) + "  euclidian distance: " + str(ed_distance) +  "  dtw distance: " + str(dtw_distance))
     plt.show()
     
     _, R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(time_series[12:12+template_length]), True)
@@ -73,26 +82,19 @@ for i in range(0,len(templates)):
     
     plt.plot(range(0,len(window)), result)
     plt.xlabel('Time')
-    plt.ylabel('x_acc')
-    plt.title('kabsch on regular timeseries: ' + str(i) + "  euclidian distance: " + str(ed_distance) +  "  dtw distance: " + str(dtw_distance))
+    plt.ylabel('Accelerator values')
+    plt.title('Kabsch on regular window: ' + str(i) + "  euclidian distance: " + str(ed_distance) +  "  dtw distance: " + str(dtw_distance))
     plt.show()
     
-    ed_distance = euclidean_distance_3d_timeseries(time_series[12:12+template_length], template)
-    dtw_distance = dtw_ndim.distance(time_series[12:12+template_length], template, use_c=True)
-    
-    plt.plot(range(0,len(window)), template)
-    plt.xlabel('Time')
-    plt.ylabel('x_acc')
-    plt.title('template: ' + str(i) + "  euclidian distance: " + str(ed_distance) +  "  dtw distance: " + str(dtw_distance))
-    plt.show()
+
     
     ed_distance = euclidean_distance_3d_timeseries(window, template)
     dtw_distance = dtw_ndim.distance(window, template, use_c=True)
 
     plt.plot(range(0,len(window)), window)
     plt.xlabel('Time')
-    plt.ylabel('x_acc')
-    plt.title('rotated window: ' + str(i) + "  euclidian distance: " + str(ed_distance) +  "  dtw distance: " + str(dtw_distance))
+    plt.ylabel('Accelerator values')
+    plt.title('Template compared to rotated window: ' + str(i) + "  euclidian distance: " + str(ed_distance) +  "  dtw distance: " + str(dtw_distance))
     plt.show()
     
     _, R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), True)
@@ -104,8 +106,8 @@ for i in range(0,len(templates)):
     
     plt.plot(range(0,len(window)), window)
     plt.xlabel('Time')
-    plt.ylabel('x_acc')
-    plt.title('rotated window kabsch: ' + str(i)  + "  euclidian distance: " + str(ed_distance) +  "  dtw distance: " + str(dtw_distance))
+    plt.ylabel('Accelerator values')
+    plt.title('Kabsch on rotated window: ' + str(i)  + "  euclidian distance: " + str(ed_distance) +  "  dtw distance: " + str(dtw_distance))
     plt.show()
     
  

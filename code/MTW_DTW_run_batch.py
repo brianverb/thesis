@@ -16,9 +16,9 @@ def run(subject, exercise, unit, rotation_file, preprocess, kabsch):
 
     annotated_series = segment_time_series(time_series, templates, kabsch)
     
-    accuracy = evaluate_time_series(time_series, templates, annotated_series, ground_truth)
+    accuracy, conf = evaluate_time_series(time_series, templates, annotated_series, ground_truth, segment_percentage=0.8, exercise_percentage=0.6)
     
-    return accuracy
+    return accuracy, conf
 
 def load_data(subject, exercise, unit):
     l = loader.Loading("code\data")
@@ -39,17 +39,18 @@ def apply_rotation(time_series, rotation_file):
     
 def segment_time_series(time_series, templates, kabsch):
     #Use DTW to recognize every occurence of an exercise
-    DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=35, max_matches=30,annotation_margin=0)
+    DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=45, max_matches=30,annotation_margin=0)
     DTW.find_matches(k=kabsch, steps=1)
     DTW.order_matches()
     return DTW.annotate_series_max_distance()
 
-def evaluate_time_series(time_series, templates, annotated_series, ground_truth):
-    MTMM_DTW_EVAL = eval.evaluation(series=time_series, templates=templates, ground_truth=ground_truth)
+def evaluate_time_series(time_series, templates, annotated_series, ground_truth, segment_percentage, exercise_percentage):
+    MTMM_DTW_EVAL = eval.evaluation(series=time_series, templates=templates, ground_truth=ground_truth, segment_percentage=segment_percentage, exercise_percentage=exercise_percentage)
     MTMM_DTW_EVAL.annotated_series = annotated_series
     MTMM_DTW_EVAL.annotate_ground_truth()
     MTMM_DTW_EVAL.clean_annotations()
 
     acc = MTMM_DTW_EVAL.exercise_accuracy()
+    conf = MTMM_DTW_EVAL.exercise_confusion_matrix()
     
-    return acc
+    return acc, conf

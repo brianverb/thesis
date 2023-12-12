@@ -120,7 +120,6 @@ class dtw_windowed:
         return self.annotated_series
     
     def remove_all_overlapping_matches(self, start, end, matches):
-        print("start: " + str(start) + "  end: " + str(end))
         new_matches = []
         removed_matches = 0
         for (start_m, end_m, distance_m, label_m) in matches:
@@ -130,7 +129,6 @@ class dtw_windowed:
                 new_matches.append((start_m, end_m, distance_m, label_m))
             else:
                 removed_matches += 1
-        print("removed matches: " + str(removed_matches))
         return new_matches
     
     def annotate_series_max_matches(self):
@@ -149,7 +147,7 @@ class dtw_windowed:
             matches = self.remove_all_overlapping_matches(start, end, matches)
             index +=1   
 
-            if index == len(matches)-1:
+            if index >= len(matches)-1:
                 print("not enough matches left")
                 break
             

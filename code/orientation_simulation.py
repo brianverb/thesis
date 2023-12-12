@@ -90,10 +90,6 @@ class orientation_simulation:
         
         rot_M = self.create_rotation_matrix_angles([x_angle, y_angle, z_angle])
         return rot_M
-    
-    def create_random_walk(self):
-        #TODO
-        return None
         
     def apply_rotation(self, series, rotation_matrix, start=0):
         result = np.dot(rotation_matrix, series[start:, :].T).T

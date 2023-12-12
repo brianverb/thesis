@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 class evaluation:
-    def __init__(self, series, ground_truth, templates ,segmented_indices=[]):
+    def __init__(self, series, ground_truth, templates, segment_percentage=0.8, exercise_percentage=0.8 ,segmented_indices=[]):
         self.series = series
         self.segmented_indices = segmented_indices
         self.length = len(series)
@@ -21,7 +21,8 @@ class evaluation:
         self.recall = None
         self.f1score = None
         self.mcc = None
-        self.segment_percentage = 0.9
+        self.segment_percentage = segment_percentage
+        self.exercise_percentage = exercise_percentage
         self.found_truth = []
         self.templates = templates
         
@@ -153,32 +154,32 @@ class evaluation:
             while i < len(self.annotated_series)-template_length:
                 count =  np.count_nonzero(self.annotated_series[i:i+template_length] == t)
                 
-                if count/template_length > self.segment_percentage:
+                if count/template_length > self.exercise_percentage:
                     self.found_truth.append((i,i+template_length,t))
                     i = i + template_length
                 else:  
                     i += 1
-                    
+        print(self.found_truth)
         return self.found_truth
     
     def exercise_confusion_matrix(self):
         discovered = self.get_exercises()
         self.ground_truth
         conf = np.zeros((4,4))
+        
         for(start_d, end_d, label_d) in discovered:
+            found_match = False
             for (start_gt, end_gt, label_gt) in self.ground_truth:
                 overlap_length = max(0, min(end_d, end_gt) - max(start_d, start_gt))
                 length_d = end_d - start_d
                 length_gt = end_gt - start_gt
                 
                 percentage_overlap = (overlap_length / min(length_d, length_gt)) * 100
-                if percentage_overlap > self.segment_percentage:
-                    if label_d == int(label_gt):
-                        conf[label_d+1, label_d+1] +=1
-                    else:
-                        conf[0, label_d] += 1
-                    break
-        
+                if percentage_overlap > self.exercise_percentage:
+                    found_match = True
+            if not found_match:
+                conf[0, int(label_d)+1] += 1
+                
         for (start_gt, end_gt, label_gt) in self.ground_truth:
             found_match = False
             for(start_d, end_d, label_d) in discovered:
@@ -186,11 +187,13 @@ class evaluation:
                 length_d = end_d - start_d
                 length_gt = end_gt - start_gt
                 
-                percentage_overlap = (overlap_length / min(length_d, length_gt)) * 100
-                if percentage_overlap > self.segment_percentage:
+                percentage_overlap = (overlap_length / min(length_d, length_gt))
+                if percentage_overlap > self.exercise_percentage:
                     found_match = True
+                    conf[int(label_gt)+1, label_d+1] += 1
             if not found_match:
                 conf[int(label_gt)+1, 0] += 1
+
         return conf
 
     def exercise_accuracy(self): 
@@ -202,49 +205,15 @@ class evaluation:
                 if(i==j):
                     correct += conf[i,j]
                 else:
-                    false +=1
-                  
+                    false += conf[i,j]
+        
         return correct / (correct + false)
-        
-    def simple_confusion_matrix(self):
-        conf = np.zeros((4,4))
-        for (start,end,label) in self.ground_truth:
-            occurences = np.zeros((4))
-            for i in range(int(start),int(end)):
-                occurences[self.annotated_series[i]+1] += 1
-            
-            max_index = np.argmax(occurences)
-            if occurences[max_index] / (end-start) > self.segment_percentage: 
-                conf[int(label)+1,max_index] += 1
-            else:
-                conf[int(label)+1,0] += 1
-        
-        self.calculate_confusion_values()
-             
-        correctly_ignored = self.TN / (self.FP + self.TN)
-        #Make the correctly ignored count for more than just 1 value.
-        conf[0,0] = correctly_ignored*20
-        
-        return conf       
-    
-    def simple_accuracy(self):
-        conf = self.simple_confusion_matrix()
-        correct = 0
-        print(conf[0,0])
-        for i in range (0,conf.shape[0]):
-            for j in range(0,conf.shape[1]):
-                if(i==j):
-                    print("looking at cell ["+str(i)+","+str(j)+ "]")
-                    correct += conf[i,j]
-                    print(correct)
-                  
-        return correct / 50
     
     def plot_simple_confusion_matrix(self):
         conf = self.exercise_confusion_matrix().astype(int)
-        xlabels = ["Missed", 1, 2, 3]
-        ylabels = ["Wrong", 1, 2, 3]
-        print(conf)
+        xlabels = ["Missed Predictions", 1, 2, 3]
+        ylabels = ["False Predictions", 1, 2, 3]
+
         # Plot confusion matrix
         sns.set(font_scale=1.2)
         plt.figure(figsize=(8, 6))
@@ -255,4 +224,4 @@ class evaluation:
         plt.title('Confusion Matrix')
         plt.xlabel('Predicted')
         plt.ylabel('Actual')
-        #plt.show()
+        plt.show()
