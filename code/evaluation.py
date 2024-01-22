@@ -155,7 +155,7 @@ class evaluation:
                 count =  np.count_nonzero(self.annotated_series[i:i+template_length] == t)
                 
                 if count/template_length > self.exercise_percentage:
-                    self.found_truth.append((i,i+template_length,t))
+                    self.found_truth.append((i, i+template_length, 0, t))
                     i = i + template_length
                 else:  
                     i += 1
@@ -163,13 +163,13 @@ class evaluation:
         return self.found_truth
     
     def exercise_confusion_matrix(self):
-        discovered = self.get_exercises()
+        discovered = self.matrix_profiling_exercise_amount()
         self.ground_truth
         conf = np.zeros((4,4))
         
-        for(start_d, end_d, label_d) in discovered:
+        for(start_d, end_d, _, label_d) in discovered:
             found_match = False
-            for (start_gt, end_gt, label_gt) in self.ground_truth:
+            for (start_gt, end_gt,label_gt) in self.ground_truth:
                 overlap_length = max(0, min(end_d, end_gt) - max(start_d, start_gt))
                 length_d = end_d - start_d
                 length_gt = end_gt - start_gt
@@ -182,7 +182,7 @@ class evaluation:
                 
         for (start_gt, end_gt, label_gt) in self.ground_truth:
             found_match = False
-            for(start_d, end_d, label_d) in discovered:
+            for(start_d, end_d, _, label_d) in discovered:
                 overlap_length = max(0, min(end_d, end_gt) - max(start_d, start_gt))
                 length_d = end_d - start_d
                 length_gt = end_gt - start_gt
@@ -227,22 +227,39 @@ class evaluation:
         plt.show()
     
     def build_percentage_arrays(self):
-        distances = []
-        
+        percentages = []
+  
         for t in range(0,len(self.templates)):
             template_length = len(self.templates[t])
             
             window = self.annotated_series[0:template_length]
-            distance = window.count(t)
-            distances.append(0, template_length, distances, t)
+
+            distance = 0
+            for i in range(0, template_length):
+                if(window[i] == t):
+                    distance +=1
+            distance = distance / template_length
+            percentages.append((0, template_length, distance, t))
             
-            for i in range(0,len(self.annotated_series)-template_length):
-                if(self.annotated_series[i] == t):
+            for i in range(1,len(self.annotated_series)-template_length):
+                distance = distance * template_length
+                if(self.annotated_series[i-1] == t):
                     distance -= 1
                 if(self.annotated_series[i+template_length] == t):
                     distance += 1
-                    distances.append(i, i+template_length, distances, t)
-        return distances
+                distance = distance / template_length
+                percentages.append((i, i+template_length, distance, t))
+        
+        self.plot_percentages(percentages)
+        return percentages
+    
+    def plot_percentages(self, percentages):
+        for t in range(0,len(self.templates)):
+            percentages_of_template_x = list(filter(lambda item: item[3] == t, percentages))
+            distances_of_template_x = [item[2] for item in percentages_of_template_x]
+
+            plt.plot(distances_of_template_x, label='Percentages of label: ' + str(t), color='red')
+            plt.show()
     
     def remove_overlapping_matches(self, start_m, end_m, distances, overlap_ratio_allowed=0.05):
         distances = []
@@ -269,6 +286,8 @@ class evaluation:
             
             if len(distances) == 0:
                 break
+        self.found_truth = found_exercises
+        return found_exercises
         
     def matrix_profiling_distance_percentage(self, percentage=0.9):
         distances = self.build_percentage_arrays()
@@ -282,7 +301,10 @@ class evaluation:
             
             if len(distances) == 0:
                 break
-            
+        self.found_truth = found_exercises
+        return found_exercises
+
+
         
         
         

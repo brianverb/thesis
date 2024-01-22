@@ -54,7 +54,7 @@ MTMM_DTW_EVAL = eval.evaluation(series=time_series, templates=templates, ground_
 MTMM_DTW_EVAL.annotated_series = DTW.annotated_series
 MTMM_DTW_EVAL.annotate_ground_truth()
 MTMM_DTW_EVAL.evaluate()
-
+'''
 # Plotting
 plt.figure(figsize=(10, 6))  # Adjust the figure size as needed
 plt.plot(MTMM_DTW_EVAL.annotated_series, label='Annotated series', color='red')
@@ -66,12 +66,13 @@ plt.ylabel('label')
 plt.title('Annotated labels')
 
 plt.legend()
-plt.show()
-
+#plt.show()
+'''
 MTMM_DTW_EVAL.clean_annotations()
 MTMM_DTW_EVAL.evaluate()
-# Plotting
 
+'''
+# Plotting
 
 plt.figure(figsize=(10, 6))  # Adjust the figure size as needed
 plt.plot(MTMM_DTW_EVAL.annotated_series, label='Annotated series', color='red')
@@ -86,7 +87,7 @@ plt.legend()
 plt.show()
 
 DTW.plot_distances_points(ground_truths=MTMM_DTW_EVAL.ground_truth)
-
+'''
 acc = MTMM_DTW_EVAL.exercise_accuracy()  
 
 print(MTMM_DTW_EVAL.exercise_confusion_matrix())
