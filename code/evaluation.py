@@ -225,3 +225,67 @@ class evaluation:
         plt.xlabel('Predicted')
         plt.ylabel('Actual')
         plt.show()
+    
+    def build_percentage_arrays(self):
+        distances = []
+        
+        for t in range(0,len(self.templates)):
+            template_length = len(self.templates[t])
+            
+            window = self.annotated_series[0:template_length]
+            distance = window.count(t)
+            distances.append(0, template_length, distances, t)
+            
+            for i in range(0,len(self.annotated_series)-template_length):
+                if(self.annotated_series[i] == t):
+                    distance -= 1
+                if(self.annotated_series[i+template_length] == t):
+                    distance += 1
+                    distances.append(i, i+template_length, distances, t)
+        return distances
+    
+    def remove_overlapping_matches(self, start_m, end_m, distances, overlap_ratio_allowed=0.05):
+        distances = []
+        length_match = end_m - start_m
+        overlap_allowed = length_match * overlap_ratio_allowed
+        
+        for (start, end, distance, template) in distances:
+            overlap_length = max(0, min(end, end_m) - max(start, start_m))
+            
+            if overlap_length < overlap_allowed:
+                distances.append((start, end, distance, template))
+            
+        return distances
+    
+    def matrix_profiling_exercise_amount(self, exercise_amounts=30):
+        distances = self.build_percentage_arrays()
+        found_exercises = []
+        found_exercises_amount = 0
+        
+        while found_exercises_amount < exercise_amounts:
+            (start, end, distance, template)  = max(distances, key=lambda x: x[2])
+            found_exercises.append((start, end, distance, template) )
+            distances = self.remove_overlapping_matches(start, end, distances)
+            
+            if len(distances) == 0:
+                break
+        
+    def matrix_profiling_distance_percentage(self, percentage=0.9):
+        distances = self.build_percentage_arrays()
+        found_exercises = []
+        (start, end, distance, template) = max(distances, key=lambda x: x[2])
+        
+        while distance <= percentage:
+            found_exercises.append((start, end, distance, template))
+            (start, end, distance, template) = max(distances, key=lambda x: x[2])
+            distances = self.remove_overlapping_matches(start, end, distances)
+            
+            if len(distances) == 0:
+                break
+            
+        
+        
+        
+            
+    
+    

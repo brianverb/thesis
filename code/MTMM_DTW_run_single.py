@@ -46,7 +46,7 @@ time_series = apply_rotation(time_series=time_series, rotation_file=rotation_fil
 #Use the kabsch algorithm to transform the timeseries to optimal rotated series based on the templates
 transformed_series = kabsch_time.transform(templates,time_series,scaling)
 
-'''
+
 plt.plot(range(0,len(time_series)), time_series)
 # Add labels and title
 plt.xlabel('Time')
@@ -61,7 +61,7 @@ plt.xlabel('Time')
 plt.ylabel('Accel')
 plt.title('transformed timeseries')
 plt.show()
-'''
+
 time_series = [time_series.copy() for _ in range(3)]
 
 #Use DTW to recognize every occurence of an exercise

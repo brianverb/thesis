@@ -36,8 +36,8 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
                 best_match_index = t
                 
             matches.append(match)
-            #dtwvis.plot_warpingpaths(query, serie, sa.warping_paths(), match.path, figure=fig,showlegend=True)
-            #plt.show()
+            dtwvis.plot_warpingpaths(query, serie, sa.warping_paths(), match.path, figure=fig,showlegend=True)
+            plt.show()
             
         if best_match_index == None:
             #print("There is no path found that is close enough, we finish early")

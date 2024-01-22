@@ -25,6 +25,15 @@ plt.ylabel('Accelerator values')
 plt.title('Regular time serie')
 plt.show()
 
+
+plt.plot(range(0,len(templates[0])), templates[0])
+# Add labels and title
+plt.xlabel('Time')
+plt.ylabel('Accelerator values')
+plt.title('Template')
+plt.show()
+
+
 simulation = orsim.orientation_simulation()
 rot_M = simulation.create_random_rotation_matrix()
 print(rot_M)
@@ -43,13 +52,8 @@ plt.title('Rotated serie')
 plt.show()
 
 def euclidean_distance_3d_timeseries(series_a, series_b):
-    total_distance = 0
+    return np.linalg.norm(np.array(series_a) - np.array(series_b))
 
-    for point_a, point_b in zip(series_a, series_b):
-        distance = np.linalg.norm(np.array(point_a) - np.array(point_b))
-        total_distance += distance
-
-    return total_distance
 
 for i in range(0,len(templates)):
     template = templates[i]
@@ -63,14 +67,13 @@ for i in range(0,len(templates)):
     plt.ylabel('Accelerator values')
     plt.title('Window of regular serie')
     plt.show()
-    
     ed_distance = euclidean_distance_3d_timeseries(time_series[12:12+template_length], template)
     dtw_distance = dtw_ndim.distance(time_series[12:12+template_length], template, use_c=True)
     
     plt.plot(range(0,len(window)), template)
     plt.xlabel('Time')
     plt.ylabel('Accelerator values')
-    plt.title('Template compared to regular window: ' + str(i) + "  euclidian distance: " + str(ed_distance) +  "  dtw distance: " + str(dtw_distance))
+    plt.title('Window compared to template: ' + str(i) + "  euclidian distance: " + str(ed_distance) +  "  dtw distance: " + str(dtw_distance))
     plt.show()
     
     _, R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(time_series[12:12+template_length]), True)
@@ -86,15 +89,14 @@ for i in range(0,len(templates)):
     plt.title('Kabsch on regular window: ' + str(i) + "  euclidian distance: " + str(ed_distance) +  "  dtw distance: " + str(dtw_distance))
     plt.show()
     
-
-    
+   
     ed_distance = euclidean_distance_3d_timeseries(window, template)
     dtw_distance = dtw_ndim.distance(window, template, use_c=True)
 
     plt.plot(range(0,len(window)), window)
     plt.xlabel('Time')
     plt.ylabel('Accelerator values')
-    plt.title('Template compared to rotated window: ' + str(i) + "  euclidian distance: " + str(ed_distance) +  "  dtw distance: " + str(dtw_distance))
+    plt.title('Rotated window compared to template: ' + str(i) + "  euclidian distance: " + str(ed_distance) +  "  dtw distance: " + str(dtw_distance))
     plt.show()
     
     _, R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), True)
