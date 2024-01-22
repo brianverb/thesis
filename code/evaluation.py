@@ -163,11 +163,11 @@ class evaluation:
         return self.found_truth
     
     def exercise_confusion_matrix(self):
-        discovered = self.matrix_profiling_exercise_amount()
+        discovered = self.matrix_profiling_distance_percentage()
         self.ground_truth
         conf = np.zeros((4,4))
         
-        for(start_d, end_d, _, label_d) in discovered:
+        for(start_d, end_d, label_d) in discovered:
             found_match = False
             for (start_gt, end_gt,label_gt) in self.ground_truth:
                 overlap_length = max(0, min(end_d, end_gt) - max(start_d, start_gt))
@@ -182,7 +182,7 @@ class evaluation:
                 
         for (start_gt, end_gt, label_gt) in self.ground_truth:
             found_match = False
-            for(start_d, end_d, _, label_d) in discovered:
+            for(start_d, end_d, label_d) in discovered:
                 overlap_length = max(0, min(end_d, end_gt) - max(start_d, start_gt))
                 length_d = end_d - start_d
                 length_gt = end_gt - start_gt
@@ -231,26 +231,23 @@ class evaluation:
   
         for t in range(0,len(self.templates)):
             template_length = len(self.templates[t])
+            matching_labels = 0
             
-            window = self.annotated_series[0:template_length]
-
-            distance = 0
-            for i in range(0, template_length):
-                if(window[i] == t):
-                    distance +=1
-            distance = distance / template_length
-            percentages.append((0, template_length, distance, t))
+            for i in range(0,template_length):
+                if t == self.annotated_series[i]:
+                    matching_labels +=1
+            distance = matching_labels / template_length
+            percentages.append((i, i+template_length, distance, t))
             
             for i in range(1,len(self.annotated_series)-template_length):
-                distance = distance * template_length
                 if(self.annotated_series[i-1] == t):
-                    distance -= 1
+                    matching_labels -= 1
                 if(self.annotated_series[i+template_length] == t):
-                    distance += 1
-                distance = distance / template_length
+                    matching_labels += 1
+                distance = matching_labels / template_length
                 percentages.append((i, i+template_length, distance, t))
         
-        self.plot_percentages(percentages)
+        #self.plot_percentages(percentages)
         return percentages
     
     def plot_percentages(self, percentages):
@@ -260,48 +257,73 @@ class evaluation:
 
             plt.plot(distances_of_template_x, label='Percentages of label: ' + str(t), color='red')
             plt.show()
-    
-    def remove_overlapping_matches(self, start_m, end_m, distances, overlap_ratio_allowed=0.05):
-        distances = []
+            
+    def plot_found_truth(self):    
+        data = np.full(self.annotated_series.shape, 0)
+        for (start,end,label) in self.found_truth:
+            for index in range(start,end+1):
+                data[index] = label
+        plt.plot(data, label='found exercises: ' , color='red')
+        plt.show()
+                
+    def remove_overlapping_matches(self, start_m, end_m, old_percentages, overlap_ratio_allowed=0.05):
+        new_percentages = []
         length_match = end_m - start_m
         overlap_allowed = length_match * overlap_ratio_allowed
+        print("length match: " + str(length_match))
+        print("overlapped allowed: " + str(overlap_allowed))
         
-        for (start, end, distance, template) in distances:
+        for (start, end, distance, template) in old_percentages:
+            
             overlap_length = max(0, min(end, end_m) - max(start, start_m))
-            
+    
             if overlap_length < overlap_allowed:
-                distances.append((start, end, distance, template))
+                new_percentages.append((start, end, distance, template))
             
-        return distances
+        return new_percentages
     
     def matrix_profiling_exercise_amount(self, exercise_amounts=30):
-        distances = self.build_percentage_arrays()
+        percentages = self.build_percentage_arrays()
         found_exercises = []
         found_exercises_amount = 0
         
         while found_exercises_amount < exercise_amounts:
-            (start, end, distance, template)  = max(distances, key=lambda x: x[2])
-            found_exercises.append((start, end, distance, template) )
-            distances = self.remove_overlapping_matches(start, end, distances)
+            (start, end, percentage, template)  = max(percentages, key=lambda x: x[2])
+            print("Found best match: " + str(start) + " , " + str(end) + " , " + str(percentage) + " , " + str(template) )
+            found_exercises.append((start, end, template) )
+            percentages = self.remove_overlapping_matches(start, end, percentages)
             
-            if len(distances) == 0:
+            print(len(percentages))
+            if len(percentages) == 0:
+                print("breaking bcs of no matches left")
                 break
+            found_exercises_amount +=1
+            
         self.found_truth = found_exercises
+        print(found_exercises)
+        print(len(found_exercises))
+        self.plot_found_truth()
         return found_exercises
         
-    def matrix_profiling_distance_percentage(self, percentage=0.9):
-        distances = self.build_percentage_arrays()
+    def matrix_profiling_distance_percentage(self, percentage_threshold=0.9):
+        percentages = self.build_percentage_arrays()
         found_exercises = []
-        (start, end, distance, template) = max(distances, key=lambda x: x[2])
-        
-        while distance <= percentage:
-            found_exercises.append((start, end, distance, template))
-            (start, end, distance, template) = max(distances, key=lambda x: x[2])
-            distances = self.remove_overlapping_matches(start, end, distances)
+        percentage=1
+        while percentage > percentage_threshold:
+            (start, end, percentage, template)  = max(percentages, key=lambda x: x[2])
+            print("Found best match: " + str(start) + " , " + str(end) + " , " + str(percentage) + " , " + str(template) )
+            found_exercises.append((start, end, template) )
+            percentages = self.remove_overlapping_matches(start, end, percentages)
             
-            if len(distances) == 0:
+            print(len(percentages))
+            if len(percentages) == 0:
+                print("breaking bcs of no matches left")
                 break
+            
         self.found_truth = found_exercises
+        print(found_exercises)
+        print(len(found_exercises))
+        self.plot_found_truth()
         return found_exercises
 
 

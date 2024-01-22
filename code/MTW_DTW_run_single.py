@@ -70,8 +70,8 @@ plt.legend()
 '''
 MTMM_DTW_EVAL.clean_annotations()
 MTMM_DTW_EVAL.evaluate()
-
 '''
+
 # Plotting
 
 plt.figure(figsize=(10, 6))  # Adjust the figure size as needed
