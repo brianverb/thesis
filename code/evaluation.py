@@ -247,7 +247,7 @@ class evaluation:
                 distance = matching_labels / template_length
                 percentages.append((i, i+template_length, distance, t))
         
-        #self.plot_percentages(percentages)
+        self.plot_percentages(percentages)
         return percentages
     
     def plot_percentages(self, percentages):
