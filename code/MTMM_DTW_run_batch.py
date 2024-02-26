@@ -6,14 +6,13 @@ import evaluation as eval
 import orientation_simulation as orsim
 import preprocessing as prep
 
-def run(subject, exercise, unit, rotation_file, preprocess, kabsch):
+def run(subject, exercise, unit, rotation_file, kabsch):
     templates, time_series, ground_truth = load_data(subject, exercise, unit)
     
-    if preprocess:
-        preprocessor = prep.preprocessor(series=time_series, templates=templates)
-        time_series = preprocessor.process()
-
-    time_series = apply_rotation(time_series, rotation_file)
+    #preprocessor = prep.preprocessor(series=time_series, templates=templates)
+    #time_series = preprocessor.process()
+        
+    #time_series = apply_rotation(time_series, rotation_file)
 
     classificaiton_indices = segment_time_series(time_series, templates, kabsch)
     
@@ -42,21 +41,22 @@ def segment_time_series(time_series, templates, kabsch):
     if kabsch:
         #Use the kabsch algorithm to transform the timeseries to optimal rotated series based on the templates
         time_series = kabsch_time.transform(templates,time_series,scaling=False)
-        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,max_iterations=300, max_iterations_bad_match = 30)
+        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,max_iterations=3000, max_iterations_bad_match = 300, min_path_length=0.5, max_distance=75)
     else:
         time_series = [time_series.copy() for _ in range(3)]
-        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,max_iterations=2000, max_iterations_bad_match = 400)
+        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,max_iterations=5000, max_iterations_bad_match = 5000, min_path_length=0.05, max_distance=10000)
     
     return segmented_series_classification_indices
 
-def evaluate_time_series(time_series, classificaiton_indices, templates, ground_truth):
+def evaluate_time_series(time_series, classificaiton_indices, templates, ground_truth): 
     MTMM_DTW_EVAL = eval.evaluation(series=time_series[:,0], templates=templates, segmented_indices=classificaiton_indices, ground_truth=ground_truth)
     MTMM_DTW_EVAL.annotate_ground_truth()
     MTMM_DTW_EVAL.annotate_timeseries()
 
-    MTMM_DTW_EVAL.clean_annotations()
 
-    acc = MTMM_DTW_EVAL.exercise_accuracy()
+    MTMM_DTW_EVAL.matrix_profiling_distance_percentage()
     conf = MTMM_DTW_EVAL.exercise_confusion_matrix()
+    acc = MTMM_DTW_EVAL.exercise_accuracy(conf)
+    
     
     return acc,conf

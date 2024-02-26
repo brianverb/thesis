@@ -5,12 +5,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 class preprocessor:
-    def __init__(self, series, templates, window_size=10, minimum_deviation=4.5, steps_ratio=0.5, minimum_deviation_in_order=10, tolerance=0.1):
+    def __init__(self, series, templates, window_size=10, minimum_deviation_in_order=10, tolerance=0.1):
         self.series = series
         self.templates = templates
         self.window_size = window_size
-        self.minimum_deviation = minimum_deviation
-        self.steps_ratio = steps_ratio
         self.minimum_deviation_in_order = minimum_deviation_in_order
         self.tolerance = tolerance
     

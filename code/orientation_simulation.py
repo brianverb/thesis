@@ -92,7 +92,7 @@ class orientation_simulation:
         return rot_M
         
     def apply_rotation(self, series, rotation_matrix, start=0):
-        result = np.dot(rotation_matrix, series[start:, :].T).T
+        result = np.matmul(rotation_matrix, series[start:, :].T).T
         return result
 
     def gram_schmidt(self, A):

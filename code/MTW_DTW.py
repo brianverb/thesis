@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from itertools import groupby
 
 class dtw_windowed:
-    def __init__(self, series, templates, annotation_margin=0, scaling=True, max_distance=0.5, max_matches=30):
+    def __init__(self, series, templates, annotation_margin=0, scaling=True, max_distance=80, max_matches=30):
         self.series = series
         self.series_length = len(series)
         self.templates = templates
@@ -28,7 +28,7 @@ class dtw_windowed:
                     window = np.dot(R, window.T).T
                     window = np.array(window)
  
-                distance = dtw_ndim.distance(window, template, use_c=True)
+                distance = dtw_ndim.distance(window, template,penalty=1, use_c=True)
                 self.matches.append((i,i+template_length,distance,t))
             #print("Matching done for template: " + str(t+1))
     
@@ -107,7 +107,7 @@ class dtw_windowed:
     
     def annotate_series_max_distance(self):
         for (start, end, distance, label) in self.ordered_matches:
-            if(distance <=self.max_distance):
+            if(distance <= self.max_distance):
                 length_of_segment = end-start
                 start_margined = start + int(length_of_segment*self.annotation_margin//2)
                 end_margined = end - int(length_of_segment*self.annotation_margin//2)

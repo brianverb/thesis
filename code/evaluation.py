@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 class evaluation:
-    def __init__(self, series, ground_truth, templates, segment_percentage=0.8, exercise_percentage=0.8 ,segmented_indices=[]):
+    def __init__(self, series, ground_truth, templates, segment_percentage=0, exercise_percentage=0.6 ,segmented_indices=[]):
         self.series = series
         self.segmented_indices = segmented_indices
         self.length = len(series)
@@ -121,6 +121,7 @@ class evaluation:
     
     def clean_annotations(self):
         segments = self.get_segments()
+        #print(segments)
         new_segments = []
         cleaned_segments = 0
         for index in range(0,len(segments)-2):
@@ -132,12 +133,17 @@ class evaluation:
                 #print("found a sandwiched segment")
                 #print(str(((e1-s1) + (e3-s3))) + " / " + str(((e1-s1) + (e2-s2) + (e3-s3))) + " = " + str(((e1-s1) + (e3-s3)) / ((e1-s1) + (e2-s2) + (e3-s3))))
                 if(((e1-s1) + (e2-s2) + (e3-s3)) >0):
+                    #print("voldoet aan eerste vergelijking")
                     if (((e1-s1) + (e3-s3)) / ((e1-s1) + (e2-s2) + (e3-s3))) > self.segment_percentage and (e2-s2) < 50:
+                        test = ((e1-s1) + (e3-s3)) / ((e1-s1) + (e2-s2) + (e3-s3))
+                        #print(str(test) + " voldoet aan 2de vergelijking")
                         #print("cleaning up segment.")
                         index += 1
                         cleaned_segments += 2
                         new_segments.append((s1,e3, first_label))
                     else:
+                        test = ((e1-s1) + (e3-s3)) / ((e1-s1) + (e2-s2) + (e3-s3))
+                        #print(str(test) + " voldoet NIET aan 2de vergelijking")
                         new_segments.append((s1,e1,first_label))
         #print("Amount of removed excess segments: " + str(cleaned_segments))
         self.segmented_indices = new_segments
@@ -163,20 +169,19 @@ class evaluation:
         return self.found_truth
     
     def exercise_confusion_matrix(self):
-        discovered = self.matrix_profiling_distance_percentage()
-        self.ground_truth
+        discovered = self.found_truth
         conf = np.zeros((4,4))
-        
+        #print(self.ground_truth)
         for(start_d, end_d, label_d) in discovered:
             found_match = False
             for (start_gt, end_gt,label_gt) in self.ground_truth:
                 overlap_length = max(0, min(end_d, end_gt) - max(start_d, start_gt))
                 length_d = end_d - start_d
-                length_gt = end_gt - start_gt
                 
-                percentage_overlap = (overlap_length / min(length_d, length_gt)) * 100
+                percentage_overlap = (overlap_length / length_d) 
                 if percentage_overlap > self.exercise_percentage:
                     found_match = True
+        
             if not found_match:
                 conf[0, int(label_d)+1] += 1
                 
@@ -184,20 +189,19 @@ class evaluation:
             found_match = False
             for(start_d, end_d, label_d) in discovered:
                 overlap_length = max(0, min(end_d, end_gt) - max(start_d, start_gt))
-                length_d = end_d - start_d
                 length_gt = end_gt - start_gt
                 
-                percentage_overlap = (overlap_length / min(length_d, length_gt))
+                percentage_overlap = (overlap_length / length_gt) 
                 if percentage_overlap > self.exercise_percentage:
                     found_match = True
                     conf[int(label_gt)+1, label_d+1] += 1
             if not found_match:
                 conf[int(label_gt)+1, 0] += 1
+           
 
         return conf
 
-    def exercise_accuracy(self): 
-        conf = self.exercise_confusion_matrix()
+    def exercise_accuracy(self, conf): 
         correct = 0
         false = 0
         for i in range (0,conf.shape[0]):
@@ -247,7 +251,7 @@ class evaluation:
                 distance = matching_labels / template_length
                 percentages.append((i, i+template_length, distance, t))
         
-        self.plot_percentages(percentages)
+        #self.plot_percentages(percentages)
         return percentages
     
     def plot_percentages(self, percentages):
@@ -266,12 +270,11 @@ class evaluation:
         plt.plot(data, label='found exercises: ' , color='red')
         plt.show()
                 
-    def remove_overlapping_matches(self, start_m, end_m, old_percentages, overlap_ratio_allowed=0.05):
+    def remove_overlapping_matches(self, start_m, end_m, old_percentages, overlap_ratio_allowed=0.1):
         new_percentages = []
         length_match = end_m - start_m
         overlap_allowed = length_match * overlap_ratio_allowed
-        print("length match: " + str(length_match))
-        print("overlapped allowed: " + str(overlap_allowed))
+
         
         for (start, end, distance, template) in old_percentages:
             
@@ -289,47 +292,95 @@ class evaluation:
         
         while found_exercises_amount < exercise_amounts:
             (start, end, percentage, template)  = max(percentages, key=lambda x: x[2])
-            print("Found best match: " + str(start) + " , " + str(end) + " , " + str(percentage) + " , " + str(template) )
+            #print("Found best match: " + str(start) + " , " + str(end) + " , " + str(percentage) + " , " + str(template) )
             found_exercises.append((start, end, template) )
             percentages = self.remove_overlapping_matches(start, end, percentages)
             
             print(len(percentages))
             if len(percentages) == 0:
-                print("breaking bcs of no matches left")
+                #print("breaking bcs of no matches left")
                 break
             found_exercises_amount +=1
             
         self.found_truth = found_exercises
-        print(found_exercises)
-        print(len(found_exercises))
-        self.plot_found_truth()
+        #self.plot_found_truth()
         return found_exercises
         
     def matrix_profiling_distance_percentage(self, percentage_threshold=0.9):
         percentages = self.build_percentage_arrays()
         found_exercises = []
         percentage=1
-        while percentage > percentage_threshold:
+        while percentage >= percentage_threshold:
             (start, end, percentage, template)  = max(percentages, key=lambda x: x[2])
-            print("Found best match: " + str(start) + " , " + str(end) + " , " + str(percentage) + " , " + str(template) )
             found_exercises.append((start, end, template) )
             percentages = self.remove_overlapping_matches(start, end, percentages)
             
-            print(len(percentages))
             if len(percentages) == 0:
-                print("breaking bcs of no matches left")
                 break
             
         self.found_truth = found_exercises
-        print(found_exercises)
-        print(len(found_exercises))
-        self.plot_found_truth()
+        #self.plot_found_truth()
+        #print(found_exercises)
         return found_exercises
 
+    def overlap_matrix(self):
+        overlap_matrix = np.zeros((len(self.ground_truth), len(self.found_truth)))
+        index_gt=0
+        for (start_gt, end_gt,_) in self.ground_truth:
+            index_d = 0
+            for (start_d, end_d,_) in self.found_truth:
+                overlap_length = max(0, min(end_d, end_gt) - max(start_d, start_gt))
+                if(overlap_length > 0):   
+                    overlap_matrix[index_gt, index_d] = overlap_length / (max(end_d, end_gt) - min(start_d, start_gt))
+                index_d +=1
+            index_gt +=1
+        return overlap_matrix
+        
+    def choose_matrix_matches(self, matrix):
+        truth_matrix = np.zeros(matrix.shape, dtype=bool)
+        while not np.all(matrix == 0):
+            max_index = np.argmax(matrix)
+            max_row, max_col = divmod(max_index, matrix.shape[1])
+            truth_matrix[max_row, max_col] = True
+            matrix[:, max_col] = 0
+            matrix[max_row,:] = 0
+        return truth_matrix
+    
+    def create_confusion_matrix_with_assignmentproblem(self):
+        overlap_matrix = self.overlap_matrix()
+        matrix = self.choose_matrix_matches(overlap_matrix)
+        confusion_matrix = np.zeros((4,4))
+        discovered_truth_not_matched = list(range(0, len(self.found_truth)))
+        for row_idx, row in enumerate(matrix):
+            flag = False
+            for col_idx, value in enumerate(row):
+                (_,_,label_gt) = self.ground_truth[row_idx]
+                label_gt = int(label_gt) +1
+                if value:
+                    (_,_,label_d) = self.found_truth[col_idx]
+                    label_d += 1
+                    confusion_matrix[label_gt, label_d] +=1
+                    discovered_truth_not_matched.remove(col_idx)
+                    flag = True
+            if not flag:
+                confusion_matrix[label_gt, 0] +=1
+            print("Exercise in gt: " + str(row_idx) + " is: " + str(flag) + "conf: " + str(confusion_matrix))
+        
+        for false_prediction in discovered_truth_not_matched:
+            (_,_,label_d) = self.found_truth[false_prediction]
+            confusion_matrix[0, label_d] += 1
+        
+        print(confusion_matrix)
+        return confusion_matrix
+
+                    
+                        
+        
+
 
         
         
+
         
-            
     
     
