@@ -16,9 +16,9 @@ def run(subject, exercise, unit, rotation_file, kabsch):
 
     classificaiton_indices = segment_time_series(time_series, templates, kabsch)
     
-    accuracy, conf = evaluate_time_series(time_series=time_series, templates=templates, classificaiton_indices=classificaiton_indices, ground_truth=ground_truth)
+    accuracy, conf, amount_of_expected_exercises = evaluate_time_series(time_series=time_series, templates=templates, classificaiton_indices=classificaiton_indices, ground_truth=ground_truth)
     
-    return accuracy, conf
+    return accuracy, conf, amount_of_expected_exercises
     
 def load_data(subject, exercise, unit):
     l = loader.Loading("code\data")
@@ -55,8 +55,9 @@ def evaluate_time_series(time_series, classificaiton_indices, templates, ground_
 
 
     MTMM_DTW_EVAL.matrix_profiling_distance_percentage()
-    conf = MTMM_DTW_EVAL.exercise_confusion_matrix()
+    conf = MTMM_DTW_EVAL.create_confusion_matrix_with_assignmentproblem()
     acc = MTMM_DTW_EVAL.exercise_accuracy(conf)
     
+    amount_of_gt = len(ground_truth)
     
-    return acc,conf
+    return acc, conf, amount_of_gt

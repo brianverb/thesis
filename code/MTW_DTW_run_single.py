@@ -18,9 +18,9 @@ def apply_rotation(time_series, rotation_file):
 l = loader.Loading("code\data")
 l.load_all()
 subjects = l.time_series
-subject = 0
-exercise = 0
-sensor = 1
+subject = 1
+exercise = 1
+sensor = 3
 
 # get accelerometer data of first subject performing the second exercises using the second sensor
 templates, time_series = subjects[subject][exercise][sensor]
@@ -42,10 +42,10 @@ plt.show()
 '''
 
 #Use DTW to recognize every occurence of an exercise
-DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=50, max_matches=30,annotation_margin=0)
+DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=0.5, max_matches=30,annotation_margin=0)
 DTW.find_matches(k=True, steps=1)
 DTW.order_matches()
-DTW.annotate_series_max_distance()
+DTW.annotate_series_max_matches_expected_matched_segments()
 
 ground_truth = loader.Loading.get_ground_truth_labels(self=l, subject=subject,exercise=exercise)
 
@@ -56,7 +56,7 @@ MTW_DTW_EVAL.evaluate()
 MTW_DTW_EVAL.matrix_profiling_distance_percentage()
 conf = MTW_DTW_EVAL.exercise_confusion_matrix()
 conf = MTW_DTW_EVAL.create_confusion_matrix_with_assignmentproblem()
-
+print(conf)
 acc = MTW_DTW_EVAL.exercise_accuracy(conf)
 print(acc)
 

@@ -28,7 +28,8 @@ class dtw_windowed:
                     window = np.dot(R, window.T).T
                     window = np.array(window)
  
-                distance = dtw_ndim.distance(window, template,penalty=1, use_c=True)
+                distance = dtw_ndim.distance(window, template, penalty=0,max_step=template_length//5, use_c=True)
+                distance /= template_length
                 self.matches.append((i,i+template_length,distance,t))
             #print("Matching done for template: " + str(t+1))
     

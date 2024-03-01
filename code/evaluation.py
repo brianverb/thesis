@@ -306,7 +306,7 @@ class evaluation:
         #self.plot_found_truth()
         return found_exercises
         
-    def matrix_profiling_distance_percentage(self, percentage_threshold=0.9):
+    def matrix_profiling_distance_percentage(self, percentage_threshold=0.8):
         percentages = self.build_percentage_arrays()
         found_exercises = []
         percentage=1
@@ -364,13 +364,12 @@ class evaluation:
                     flag = True
             if not flag:
                 confusion_matrix[label_gt, 0] +=1
-            print("Exercise in gt: " + str(row_idx) + " is: " + str(flag) + "conf: " + str(confusion_matrix))
+            #print("Exercise in gt: " + str(row_idx) + " is: " + str(flag) + "conf: " + str(confusion_matrix))
         
         for false_prediction in discovered_truth_not_matched:
             (_,_,label_d) = self.found_truth[false_prediction]
-            confusion_matrix[0, label_d] += 1
+            confusion_matrix[0, label_d+1] += 1
         
-        print(confusion_matrix)
         return confusion_matrix
 
                     

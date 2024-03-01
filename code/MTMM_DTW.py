@@ -28,11 +28,11 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
             fig = plt.figure(t)
             query = templates[t]
             serie = time_series[t]
-            sa = subsequence_alignment(query, serie, penalty=1, use_c=True)
+            sa = subsequence_alignment(query, serie, penalty=0, use_c=True)
             match = sa.best_match()
             distance = sa.distance / len(templates[t])
             if distance < best_match_distance:
-                best_match_distance = distance
+                best_match_distance = distance / len(query)
                 best_match_index = t
                 
             matches.append(match)
