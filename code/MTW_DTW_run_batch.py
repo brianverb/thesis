@@ -38,11 +38,11 @@ def apply_rotation(time_series, rotation_file):
     
 def segment_time_series(time_series, templates, kabsch):
     #Use DTW to recognize every occurence of an exercise
-    DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=0.5, max_matches=30,annotation_margin=0)
+    DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=25, max_matches=20,annotation_margin=0)
     DTW.find_matches(k=kabsch, steps=1)
     DTW.order_matches()
     
-    return DTW.annotate_series_max_distance()
+    return DTW.annotate_series_max_matches_expected_matched_segments()
 
 def evaluate_time_series(time_series, templates, annotated_series, ground_truth):
     MTMM_DTW_EVAL = eval.evaluation(series=time_series, templates=templates, ground_truth=ground_truth)

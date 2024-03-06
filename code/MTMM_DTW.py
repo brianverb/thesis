@@ -16,7 +16,8 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
     iterations = 0
     iterations_bad_match = 0
     time_series_segment_indexes = []
-    
+    distances = np.load("distances.npy", allow_pickle=True)
+    distances = distances.tolist()
     while iterations < max_iterations and iterations_bad_match < max_iterations_bad_match:
         #print(iterations < max_iterations and iterations_bad_match < max_iterations_bad_match)
         iterations += 1 
@@ -28,11 +29,10 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
             fig = plt.figure(t)
             query = templates[t]
             serie = time_series[t]
-            sa = subsequence_alignment(query, serie, penalty=0, use_c=True)
+            sa = subsequence_alignment(query, serie, penalty=10, use_c=True)
             match = sa.best_match()
             distance = sa.distance / len(templates[t])
-            if distance < best_match_distance:
-                best_match_distance = distance / len(query)
+            if distance < best_match_distance:         
                 best_match_index = t
                 
             matches.append(match)
@@ -50,12 +50,13 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
         distinct_path, _, _ = np.unique(best_match_path, axis=0, return_counts=True, return_index=True)
         length_of_best_path = len(distinct_path)
         #print("The length of the best path is: " + str(length_of_best_path))
+        distances.append(best_match_distance)
         
         s, e = matches[best_match_index].segment
         #print("start of segment to match: " + str(s))
         #print("end of segment to match: " + str(e))
-        s = max(int(s + (e-s)*margin//2),0)
-        e = min(int(e - (e-s)*margin//2), len(time_series[0])-1)
+        #s = max(int(s + (e-s)*margin//2),0)
+        #e = min(int(e - (e-s)*margin//2), len(time_series[0])-1)
         if(length_of_best_path/len(templates[best_match_index]) > min_path_length):  
             #print("the path length is: " + str(length_of_best_path) + " so the time series goes *100")
             iterations_bad_match = 0
@@ -76,6 +77,8 @@ def segment(templates, time_series,  max_iterations, max_iterations_bad_match,mi
         if iterations_bad_match >= max_iterations_bad_match:
             increment_value_in_file("bad_iterations")
     #print("max iterations for a bad match counter: " + str(max_iterations_bad_match) + "  bad iteration counter: " + str(iterations_bad_match) + "  iterations: " + str(iterations))
+    distances = np.array(distances)
+    np.save("distances.npy", distances)
     return time_series, time_series_segment_indexes
 
 

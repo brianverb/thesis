@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 class evaluation:
-    def __init__(self, series, ground_truth, templates, segment_percentage=0, exercise_percentage=0.6 ,segmented_indices=[]):
+    def __init__(self, series=None, ground_truth=None, templates=None, segment_percentage=0, exercise_percentage=0.6 ,segmented_indices=[]):
         self.series = series
         self.segmented_indices = segmented_indices
         self.length = len(series)
@@ -194,7 +194,7 @@ class evaluation:
                 percentage_overlap = (overlap_length / length_gt) 
                 if percentage_overlap > self.exercise_percentage:
                     found_match = True
-                    conf[int(label_gt)+1, label_d+1] += 1
+                    conf[int(label_gt), label_d] += 1
             if not found_match:
                 conf[int(label_gt)+1, 0] += 1
            
@@ -213,21 +213,20 @@ class evaluation:
         
         return correct / (correct + false)
     
-    def plot_simple_confusion_matrix(self):
-        conf = self.exercise_confusion_matrix().astype(int)
-        xlabels = ["Missed Predictions", 1, 2, 3]
-        ylabels = ["False Predictions", 1, 2, 3]
+    def plot_simple_confusion_matrix(self, found_truth):
+        xlabels = [1, 2, 3, "MD"]
+        ylabels = [1, 2, 3, "FD"]
 
         # Plot confusion matrix
-        sns.set(font_scale=1.2)
+        sns.set_theme(font_scale=1.2)
         plt.figure(figsize=(8, 6))
-        sns.heatmap(conf, annot=True, fmt='d', cmap='Blues',
+        sns.heatmap(found_truth, annot=True, fmt='d', cmap='Blues',
                     xticklabels=xlabels,
                     yticklabels=ylabels)
 
         plt.title('Confusion Matrix')
         plt.xlabel('Predicted')
-        plt.ylabel('Actual')
+        plt.ylabel('Ground truth')
         plt.show()
     
     def build_percentage_arrays(self):
@@ -270,7 +269,7 @@ class evaluation:
         plt.plot(data, label='found exercises: ' , color='red')
         plt.show()
                 
-    def remove_overlapping_matches(self, start_m, end_m, old_percentages, overlap_ratio_allowed=0.1):
+    def remove_overlapping_matches(self, start_m, end_m, old_percentages, overlap_ratio_allowed=0.05):
         new_percentages = []
         length_match = end_m - start_m
         overlap_allowed = length_match * overlap_ratio_allowed
@@ -284,7 +283,7 @@ class evaluation:
                 new_percentages.append((start, end, distance, template))
             
         return new_percentages
-    
+    '''
     def matrix_profiling_exercise_amount(self, exercise_amounts=30):
         percentages = self.build_percentage_arrays()
         found_exercises = []
@@ -305,7 +304,7 @@ class evaluation:
         self.found_truth = found_exercises
         #self.plot_found_truth()
         return found_exercises
-        
+    '''
     def matrix_profiling_distance_percentage(self, percentage_threshold=0.8):
         percentages = self.build_percentage_arrays()
         found_exercises = []
@@ -338,7 +337,7 @@ class evaluation:
         
     def choose_matrix_matches(self, matrix):
         truth_matrix = np.zeros(matrix.shape, dtype=bool)
-        while not np.all(matrix == 0):
+        while not np.all(matrix <=0.2):
             max_index = np.argmax(matrix)
             max_row, max_col = divmod(max_index, matrix.shape[1])
             truth_matrix[max_row, max_col] = True
@@ -355,20 +354,19 @@ class evaluation:
             flag = False
             for col_idx, value in enumerate(row):
                 (_,_,label_gt) = self.ground_truth[row_idx]
-                label_gt = int(label_gt) +1
+                label_gt = int(label_gt)
                 if value:
                     (_,_,label_d) = self.found_truth[col_idx]
-                    label_d += 1
                     confusion_matrix[label_gt, label_d] +=1
                     discovered_truth_not_matched.remove(col_idx)
                     flag = True
             if not flag:
-                confusion_matrix[label_gt, 0] +=1
+                confusion_matrix[label_gt, 3] +=1
             #print("Exercise in gt: " + str(row_idx) + " is: " + str(flag) + "conf: " + str(confusion_matrix))
         
         for false_prediction in discovered_truth_not_matched:
             (_,_,label_d) = self.found_truth[false_prediction]
-            confusion_matrix[0, label_d+1] += 1
+            confusion_matrix[3, label_d] += 1
         
         return confusion_matrix
 

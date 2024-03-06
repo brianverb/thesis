@@ -41,11 +41,11 @@ def segment_time_series(time_series, templates, kabsch):
     if kabsch:
         #Use the kabsch algorithm to transform the timeseries to optimal rotated series based on the templates
         time_series = kabsch_time.transform(templates,time_series,scaling=False)
-        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,max_iterations=3000, max_iterations_bad_match = 300, min_path_length=0.5, max_distance=75)
+        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,max_iterations=5000, max_iterations_bad_match = 5000, min_path_length=0.05, max_distance=75)
     else:
         time_series = [time_series.copy() for _ in range(3)]
-        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,max_iterations=5000, max_iterations_bad_match = 5000, min_path_length=0.05, max_distance=10000)
-    
+        (_, segmented_series_classification_indices) = dtw.segment(templates,time_series=time_series,max_iterations=1500, max_iterations_bad_match = 500, min_path_length=0.5, max_distance=10000)
+    print(segmented_series_classification_indices)
     return segmented_series_classification_indices
 
 def evaluate_time_series(time_series, classificaiton_indices, templates, ground_truth): 

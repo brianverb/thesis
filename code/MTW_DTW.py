@@ -18,6 +18,8 @@ class dtw_windowed:
         
     def find_matches(self, k=False, steps=1):
         #print("Start finding matches.")
+        #distances = np.load("distances.npy", allow_pickle=True)
+        #distances = distances.tolist()
         for t in range(0,len(self.templates)):
             template = self.templates[t]
             template_length = len(template)
@@ -28,10 +30,16 @@ class dtw_windowed:
                     window = np.dot(R, window.T).T
                     window = np.array(window)
  
-                distance = dtw_ndim.distance(window, template, penalty=0,max_step=template_length//5, use_c=True)
+                distance = dtw_ndim.distance(window, template, penalty=10, window=(template_length//10)*2, max_dist=30,use_c=True)
+                #distance = dtw_ndim.distance(window, template, penalty=0,use_c=True)
+                distance *= distance
                 distance /= template_length
+                
+                #distances.append(distance)
                 self.matches.append((i,i+template_length,distance,t))
             #print("Matching done for template: " + str(t+1))
+        #distances = np.array(distances)
+        #np.save("distances.npy", distances)
     
     def find_matches_svd(self, steps=1):
         #print("Start finding matches.")

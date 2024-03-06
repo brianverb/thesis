@@ -25,12 +25,12 @@ sensor = 3
 # get accelerometer data of first subject performing the second exercises using the second sensor
 templates, time_series = subjects[subject][exercise][sensor]
 
-#preprocessor = preproces.preprocessor(series=time_series, templates=templates)
-#time_series = preprocessor.process()
+preprocessor = preproces.preprocessor(series=time_series, templates=templates)
+time_series = preprocessor.process()
 
 rotation_file_path = os.path.join("code/rotations", "no_rotation.npy")
 
-#time_series = apply_rotation(time_series=time_series, rotation_file=rotation_file_path)
+time_series = apply_rotation(time_series=time_series, rotation_file=rotation_file_path)
 
 '''
 plt.plot(range(0,len(time_series)), time_series)
