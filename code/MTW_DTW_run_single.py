@@ -59,8 +59,7 @@ conf = MTW_DTW_EVAL.create_confusion_matrix_with_assignmentproblem()
 print(conf)
 acc = MTW_DTW_EVAL.exercise_accuracy(conf)
 print(acc)
-
-
+MTW_DTW_EVAL.plot_simple_confusion_matrix(conf)
 # Plotting
 
 plt.figure(figsize=(10, 6))  # Adjust the figure size as needed

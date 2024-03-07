@@ -13,6 +13,7 @@ class dtw_windowed:
         self.annotated_series = np.full((self.series_length,1), -1) 
         self.scaling = scaling
         self.max_distance = max_distance
+        self.match_overlap_allowed = 0.1
         self.annotation_margin = annotation_margin
         self.max_matches = max_matches
         
@@ -30,8 +31,8 @@ class dtw_windowed:
                     window = np.dot(R, window.T).T
                     window = np.array(window)
  
-                distance = dtw_ndim.distance(window, template, penalty=10, window=(template_length//10)*2, max_dist=30,use_c=True)
-                #distance = dtw_ndim.distance(window, template, penalty=0,use_c=True)
+                #distance = dtw_ndim.distance(window, template, penalty=10, window=(template_length//10)*2, max_dist=30,use_c=True)
+                distance = dtw_ndim.distance(window, template, penalty=0,use_c=True)
                 distance *= distance
                 distance /= template_length
                 
@@ -108,8 +109,6 @@ class dtw_windowed:
 
             plt.legend()
             plt.show()
-
-
         
     def order_matches(self):
         self.ordered_matches = sorted(self.matches, key=lambda x: x[2])
@@ -130,14 +129,13 @@ class dtw_windowed:
     
     def remove_all_overlapping_matches(self, start, end, matches):
         new_matches = []
-        removed_matches = 0
         for (start_m, end_m, distance_m, label_m) in matches:
             overlap_length = max(0, min(end, end_m) - max(start, start_m))
+            match_length = end - start
             
-            if overlap_length == 0:
+            if overlap_length/match_length > self.match_overlap_allowed:
                 new_matches.append((start_m, end_m, distance_m, label_m))
-            else:
-                removed_matches += 1
+
         return new_matches
     
     def annotate_series_max_matches(self):

@@ -3,6 +3,7 @@ import math
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy.optimize import linear_sum_assignment
 
 class evaluation:
     def __init__(self, series=None, ground_truth=None, templates=None, segment_percentage=0, exercise_percentage=0.6 ,segmented_indices=[]):
@@ -331,43 +332,62 @@ class evaluation:
                 overlap_length = max(0, min(end_d, end_gt) - max(start_d, start_gt))
                 if(overlap_length > 0):   
                     overlap_matrix[index_gt, index_d] = overlap_length / (max(end_d, end_gt) - min(start_d, start_gt))
+                else:
+                    overlap_matrix[index_gt, index_d] = 100
                 index_d +=1
             index_gt +=1
         return overlap_matrix
+     
+    def make_square(self, matrix):
+        num_rows, num_cols = matrix.shape
         
+        if num_rows < num_cols:
+            num_dummy_rows = num_cols - num_rows
+            dummy_rows = np.full((num_dummy_rows, num_cols), 100)
+            matrix = np.concatenate((matrix, dummy_rows), axis=0)
+            
+        if num_cols < num_rows:
+            num_dummy_cols = num_rows - num_cols
+            dummy_cols = np.full((num_rows, num_dummy_cols), 100)      
+            matrix = np.concatenate((matrix, dummy_cols), axis=1)
+        return matrix
+            
     def choose_matrix_matches(self, matrix):
-        truth_matrix = np.zeros(matrix.shape, dtype=bool)
-        while not np.all(matrix <=0.2):
-            max_index = np.argmax(matrix)
-            max_row, max_col = divmod(max_index, matrix.shape[1])
-            truth_matrix[max_row, max_col] = True
-            matrix[:, max_col] = 0
-            matrix[max_row,:] = 0
-        return truth_matrix
+        cost_matrix = self.make_square(matrix)
+        matched = []
+        not_matched = []
+        row_indices, col_indices = linear_sum_assignment(cost_matrix)
+        for row, col in zip(row_indices, col_indices):
+            #print(cost_matrix[row, col].sum())
+            if(cost_matrix[row, col].sum() <100):
+                matched.append((row,col))
+                #print("Row {} -> Column {}".format(row, col))
+            else:
+                not_matched.append((row,col))
+        return matched, not_matched
     
     def create_confusion_matrix_with_assignmentproblem(self):
         overlap_matrix = self.overlap_matrix()
-        matrix = self.choose_matrix_matches(overlap_matrix)
-        confusion_matrix = np.zeros((4,4))
-        discovered_truth_not_matched = list(range(0, len(self.found_truth)))
-        for row_idx, row in enumerate(matrix):
-            flag = False
-            for col_idx, value in enumerate(row):
-                (_,_,label_gt) = self.ground_truth[row_idx]
+        matched, non_matched = self.choose_matrix_matches(overlap_matrix)
+        confusion_matrix = np.zeros((4,4), int)
+        
+        for (row, col) in matched:
+            (_,_,label_gt) = self.ground_truth[row]
+            label_gt = int(label_gt)
+            (_,_,label_d) = self.found_truth[col]
+            confusion_matrix[label_gt, label_d] +=1
+        
+        for (row, col) in non_matched:
+            if(row < len(self.ground_truth)-1):
+                (start,end,label_gt) = self.ground_truth[row]
                 label_gt = int(label_gt)
-                if value:
-                    (_,_,label_d) = self.found_truth[col_idx]
-                    confusion_matrix[label_gt, label_d] +=1
-                    discovered_truth_not_matched.remove(col_idx)
-                    flag = True
-            if not flag:
                 confusion_matrix[label_gt, 3] +=1
-            #print("Exercise in gt: " + str(row_idx) + " is: " + str(flag) + "conf: " + str(confusion_matrix))
-        
-        for false_prediction in discovered_truth_not_matched:
-            (_,_,label_d) = self.found_truth[false_prediction]
-            confusion_matrix[3, label_d] += 1
-        
+                #print("missed prediction-> start:{} end:{} label:{}".format(start,end,label_gt))
+            if(col < len(self.found_truth)-1):
+                (start,end,label_d) = self.found_truth[col]
+                confusion_matrix[3, label_d] += 1
+                #print("false prediciton-> start:{} end:{} label:{}".format(start,end,label_d))
+              
         return confusion_matrix
 
                     

@@ -6,7 +6,7 @@ import pandas as pd
 import time
 import evaluation as eval
 
-kabsch = [False]
+kabsch = [True]
 rotations_directory = "code/rotations"
 rotations = os.listdir(rotations_directory)
 subjects = 5
@@ -102,6 +102,7 @@ def print_results_MTMM():
         EVAL = eval.evaluation(confusion_matrix)
         EVAL.plot_simple_confusion_matrix(confusion_matrix)
     results_MTMM = np.load("output_MTMM.npy", allow_pickle=True)
+    
     print("MTMM:")
     print("accuracy: " + str(np.mean(np.array([x[0] for x in np.ravel(results_MTMM)]))))
     print("missed prediction rate: " + str(np.mean(np.array([x[1] for x in np.ravel(results_MTMM)]))))
@@ -120,7 +121,7 @@ def print_results_MTW():
     
     results_MTW = np.load("output_MTW.npy", allow_pickle=True)
     print("MTW:")
-    
+    print(results_conf_MTW)
     print("accuracy: " + str(np.mean(np.array([x[0] for x in np.ravel(results_MTW)]))))
     print("missed prediction rate: " + str(np.mean(np.array([x[1] for x in np.ravel(results_MTW)]))))
     print("false prediciton rate: " + str(np.mean(np.array([x[2] for x in np.ravel(results_MTW)]))))
