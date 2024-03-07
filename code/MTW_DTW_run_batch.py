@@ -13,9 +13,9 @@ def run(subject, exercise, unit, rotation_file, kabsch):
 
     time_series = apply_rotation(time_series, rotation_file)
 
-    annotated_series = segment_time_series(time_series, templates, kabsch)
+    found_exercises = mtw_dtw(time_series, templates, kabsch)
     
-    accuracy, conf, amount_of_expected_exercises = evaluate_time_series(time_series, templates, annotated_series, ground_truth)
+    accuracy, conf, amount_of_expected_exercises = evaluate_time_series(time_series, templates, ground_truth, found_exercises)
     
     return accuracy, conf, amount_of_expected_exercises
 
@@ -34,25 +34,19 @@ def apply_rotation(time_series, rotation_file):
     rotation_matrix = np.load(rotation_file)
 
     rotated_series = simulation.apply_rotation(series=time_series, rotation_matrix=rotation_matrix)
+    
     return rotated_series 
     
-def segment_time_series(time_series, templates, kabsch):
+def mtw_dtw(time_series, templates, kabsch):
     #Use DTW to recognize every occurence of an exercise
-    DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=25, max_matches=20,annotation_margin=0)
-    DTW.find_matches(k=kabsch, steps=1)
-    DTW.order_matches()
+    DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=30, max_matches=30)
+    found_exercises = DTW.find_exercises_max_distance(kabsch=kabsch, steps=1)
     
-    return DTW.annotate_series_max_matches_expected_matched_segments()
+    return found_exercises
 
-def evaluate_time_series(time_series, templates, annotated_series, ground_truth):
-    MTMM_DTW_EVAL = eval.evaluation(series=time_series, templates=templates, ground_truth=ground_truth)
-    
-    MTMM_DTW_EVAL.annotated_series = annotated_series
-    MTMM_DTW_EVAL.annotate_ground_truth()
-    #MTMM_DTW_EVAL.clean_annotations()
-    MTMM_DTW_EVAL.matrix_profiling_distance_percentage()
-    conf = MTMM_DTW_EVAL.create_confusion_matrix_with_assignmentproblem()
-    acc = MTMM_DTW_EVAL.exercise_accuracy(conf)
+def evaluate_time_series(time_series, templates, ground_truth, found_exercises):
+    MTW_DTW_EVAL = eval.evaluation(timeseries=time_series, templates=templates, ground_truth=ground_truth, found_exercises=found_exercises)
+    acc, conf = MTW_DTW_EVAL.evaluate()
     amount_of_gt = len(ground_truth)
     
     return acc, conf, amount_of_gt

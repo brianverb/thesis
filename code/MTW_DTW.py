@@ -5,26 +5,31 @@ import matplotlib.pyplot as plt
 from itertools import groupby
 
 class dtw_windowed:
-    def __init__(self, series, templates, annotation_margin=0, scaling=True, max_distance=80, max_matches=30):
+    def __init__(self, series, templates, scaling=False, max_distance=80, max_matches=30):
         self.series = series
-        self.series_length = len(series)
+        self.timeseries_length = len(series)
+        
         self.templates = templates
-        self.matches = []
-        self.annotated_series = np.full((self.series_length,1), -1) 
+        
         self.scaling = scaling
+        
         self.max_distance = max_distance
-        self.match_overlap_allowed = 0.1
-        self.annotation_margin = annotation_margin
         self.max_matches = max_matches
         
+        self.found_matches = []
+            
+        
+        self.match_overlap_allowed = 0.1
+        
     def find_matches(self, k=False, steps=1):
+        matches = []
         #print("Start finding matches.")
         #distances = np.load("distances.npy", allow_pickle=True)
         #distances = distances.tolist()
         for t in range(0,len(self.templates)):
             template = self.templates[t]
             template_length = len(template)
-            for i in range(0,self.series_length-template_length, steps):
+            for i in range(0,self.timeseries_length-template_length, steps):
                 window = self.series[i:i+template_length]
                 if(k):
                     _, R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), self.scaling)
@@ -37,36 +42,12 @@ class dtw_windowed:
                 distance /= template_length
                 
                 #distances.append(distance)
-                self.matches.append((i,i+template_length,distance,t))
+                matches.append((i,i+template_length,distance,t))
             #print("Matching done for template: " + str(t+1))
         #distances = np.array(distances)
         #np.save("distances.npy", distances)
+        return self.order_matches(matches)
     
-    def find_matches_svd(self, steps=1):
-        #print("Start finding matches.")
-        for t in range(0,len(self.templates)):
-            template = self.templates[t]
-            template_length = len(template)
-            principal_components = self.svd(template)
-            
-            for i in range(0,self.series_length-template_length, steps):
-                window = self.series[i:i+template_length]
-                result = self.apply_svd(window, principal_components)
-                
-                distance = dtw_ndim.distance(result, template, penalty=5, use_c=True)
-                self.matches.append((i,i+template_length,distance,t))
-            #print("Matching done for template: " + str(t+1))
-            
-    def apply_svd(self, window, principal_components):
-        return np.dot(window, principal_components.T)
-   
-    def svd(self, template):
-        #mean = np.mean(template, axis=0)
-        #template = template - mean
-        _, _, VT = np.linalg.svd(template, full_matrices=False)
-        print(VT)
-        return VT 
-        
     def get_distances_by_template_id(self,arr, x):
         return [tup[2] for tup in arr if len(tup) >= 4 and tup[3] == x]
     
@@ -110,22 +91,10 @@ class dtw_windowed:
             plt.legend()
             plt.show()
         
-    def order_matches(self):
-        self.ordered_matches = sorted(self.matches, key=lambda x: x[2])
+    def order_matches(self, matches):
+        self.ordered_matches = sorted(matches, key=lambda x: x[2])
+        return self.ordered_matches
     
-    def annotate_series_max_distance(self):
-        for (start, end, distance, label) in self.ordered_matches:
-            if(distance <= self.max_distance):
-                length_of_segment = end-start
-                start_margined = start + int(length_of_segment*self.annotation_margin//2)
-                end_margined = end - int(length_of_segment*self.annotation_margin//2)
-
-                for index in range(start_margined,end_margined+1):
-                    if(self.annotated_series[index] == -1):
-                        self.annotated_series[index] = label
-            else:
-                break
-        return self.annotated_series
     
     def remove_all_overlapping_matches(self, start, end, matches):
         new_matches = []
@@ -133,51 +102,75 @@ class dtw_windowed:
             overlap_length = max(0, min(end, end_m) - max(start, start_m))
             match_length = end - start
             
-            if overlap_length/match_length > self.match_overlap_allowed:
+            if overlap_length/match_length < self.match_overlap_allowed:
                 new_matches.append((start_m, end_m, distance_m, label_m))
 
         return new_matches
     
-    def annotate_series_max_matches(self):
+    def find_exercises_max_distance(self, kabsch=False, steps=1):
+        matches = self.find_matches(kabsch, steps)
+        found_matches = []
         index = 0
-        matches = self.ordered_matches
-        while index <= self.max_matches:
-            (start, end, _, label) = matches[index]
-            length_of_segment = end-start
-            start_margined = start + int(length_of_segment*self.annotation_margin//2)
-            end_margined = end - int(length_of_segment*self.annotation_margin//2)
-
-            for i in range(start_margined,end_margined+1):
-                if(self.annotated_series[i] == -1):
-                    self.annotated_series[i] = label
+        (start, end, distance, label) = matches[index]
+        
+        while distance <= self.max_distance:
+            found_matches.append((start,end,label))
+            matches = self.remove_all_overlapping_matches(start, end, matches)
+            index +=1
+            (start, end, distance, label) = matches[index]
             
+            if index >= len(matches)-1:
+                print("not enough matches left")
+                break
+        
+        self.found_matches = found_matches       
+        return found_matches
+    
+    def find_exercises_max_matches(self, kabsch=False, steps=1):
+        matches = self.find_matches(kabsch, steps)
+        index = 0
+        found_matches = []
+        while index < self.max_matches:
+            (start, end, _, label) = matches[index]
+
+            found_matches.append((start,end,label))
             matches = self.remove_all_overlapping_matches(start, end, matches)
             index +=1   
 
             if index >= len(matches)-1:
                 print("not enough matches left")
                 break
-            
-        return self.annotated_series
-            
-    def annotate_series_max_matches_expected_matched_segments(self):
-        expected_matched_segments = 0
+        
+        self.found_matches = found_matches
+        return found_matches
+    
+    def calculate_expected_matched_segments(self):
+        total = 0
         for i in range(0, len(self.templates)):
-            expected_matched_segments += len(self.templates[i]) * 10
+            total += len(self.templates[i]) * 10
+        return total
+        
+    def find_exercises_max_matches_expected_matched_segments(self, kabsch=False, steps=1):
+        matches = self.find_matches(kabsch, steps)
+        expected_matched_segments = self.calculate_expected_matched_segments()
+        found_matches = []
         matched_segments = 0
         index = 0
-        #print(expected_matched_segments)
+        
         while matched_segments <= expected_matched_segments:
-            (start, end, _, label) = self.ordered_matches[index]
+            (start, end, _, label) = matches[index]
+            found_matches.append((start,end,label))
             
             length_of_segment = end-start
-            start_margined = start + int(length_of_segment*self.annotation_margin//2)
-            end_margined = end - int(length_of_segment*self.annotation_margin//2)
-
-            for indice in range(start_margined,end_margined+1):
-                if(self.annotated_series[indice] == -1):
-                    matched_segments +=1
-                    self.annotated_series[indice] = label
-            index +=1   
-        return self.annotated_series
+            matched_segments += length_of_segment
+    
+            matches = self.remove_all_overlapping_matches(start, end, matches)
+            index +=1
+            
+            if index >= len(matches)-1:
+                print("not enough matches left")
+                break   
+            
+        self.found_matches = found_matches
+        return found_matches
         

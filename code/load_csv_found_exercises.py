@@ -49,9 +49,9 @@ for i in range(results.shape[0]):
         templates, time_series = subjects[i][j][2]
         ground_truth = loader.Loading.get_ground_truth_labels(self=l, subject=i,exercise=j)
 
-        EVALUATION = eval.evaluation(series=time_series, templates=templates, ground_truth=ground_truth)
+        EVALUATION = eval.evaluation(timeseries=time_series, templates=templates, ground_truth=ground_truth)
         EVALUATION.ground_truth = ground_truth
-        EVALUATION.found_truth = results[i,j]
+        EVALUATION.found_exercises = results[i,j]
 
         conf = EVALUATION.create_confusion_matrix_with_assignmentproblem()
         print(conf)

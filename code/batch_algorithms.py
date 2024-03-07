@@ -18,7 +18,7 @@ results_conf_MTMM = np.zeros((5,4,4), dtype=int)
 def run_each_exercise_and_subject():
     start_time = time.time()
     
-    for algorithm in range(1,2):
+    for algorithm in range(0,1):
         for subject in range(0, subjects):
             for exercise in range(0, exercises):
                 run_each_execution_setting(subject, exercise, 1, algorithm)
