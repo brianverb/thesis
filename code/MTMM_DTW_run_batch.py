@@ -1,3 +1,10 @@
+"""
+:author Brian Verbanck
+:copyright: Copyright 2024 KU Leuven
+:license: Apache License, Version 2.0, see LICENSE for details.
+
+"""
+
 import loading as loader
 import numpy as np
 import MTMM_DTW as MTMMM
@@ -7,14 +14,14 @@ import preprocessing as prep
 
 def run(subject, exercise, unit, rotation_file, kabsch):
     templates, time_series, ground_truth = load_data(subject, exercise, unit)
+
+    time_series = apply_rotation(time_series, rotation_file)
     
     preprocessor = prep.preprocessor(series=time_series, templates=templates)
     time_series = preprocessor.process()
-        
-    time_series = apply_rotation(time_series, rotation_file)
-
-    found_exercises = MTMMM.find_exercises(templates,time_series=time_series, kabsch=kabsch, max_iterations=1000, max_iterations_bad_match = 500, min_segment_length=0.5)
     
+    found_exercises = MTMMM.find_exercises(templates,time_series=time_series, kabsch=kabsch, max_iterations=1000, max_iterations_bad_match = 500, min_segment_length=0.5)
+
     accuracy, conf, amount_of_expected_exercises = evaluate_time_series(time_series=time_series, templates=templates, found_exercises=found_exercises, ground_truth=ground_truth)
     
     return accuracy, conf, amount_of_expected_exercises

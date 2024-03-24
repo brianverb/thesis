@@ -1,3 +1,9 @@
+"""
+:author Brian Verbanck
+:copyright: Copyright 2024 KU Leuven
+:license: Apache License, Version 2.0, see LICENSE for details.
+
+"""
 import kabsch
 import numpy as np
 from dtaidistance import dtw_ndim
@@ -19,7 +25,7 @@ class dtw_windowed:
         self.found_matches = []
             
         
-        self.match_overlap_allowed = 0.1
+        self.match_overlap_allowed = 0.2
         
     def find_matches(self, k=False, steps=1):
         matches = []
@@ -37,7 +43,7 @@ class dtw_windowed:
                     window = np.array(window)
  
                 #distance = dtw_ndim.distance(window, template, penalty=10, window=(template_length//10)*2, max_dist=30,use_c=True)
-                distance = dtw_ndim.distance(window, template, penalty=0,use_c=True)
+                distance = dtw_ndim.distance(window, template, use_c=True)
                 distance *= distance
                 distance /= template_length
                 
@@ -102,7 +108,7 @@ class dtw_windowed:
             overlap_length = max(0, min(end, end_m) - max(start, start_m))
             match_length = end - start
             
-            if overlap_length/match_length < self.match_overlap_allowed:
+            if overlap_length/match_length <= self.match_overlap_allowed:
                 new_matches.append((start_m, end_m, distance_m, label_m))
 
         return new_matches
@@ -117,11 +123,12 @@ class dtw_windowed:
             found_matches.append((start,end,label))
             matches = self.remove_all_overlapping_matches(start, end, matches)
             index +=1
-            (start, end, distance, label) = matches[index]
             
             if index >= len(matches)-1:
                 print("not enough matches left")
                 break
+            
+            (start, end, distance, label) = matches[index]
         
         self.found_matches = found_matches       
         return found_matches

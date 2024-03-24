@@ -1,3 +1,8 @@
+"""
+:author Brian Verbanck
+:copyright: Copyright 2024 KU Leuven
+:license: Apache License, Version 2.0, see LICENSE for details.
+"""
 import numpy as np
 import pandas as pd
 
@@ -21,7 +26,6 @@ interval_counts = {}
 # Iterate over the intervals and initialize counts to zero
 for i in range(int(250 / interval_size) + 1):
     interval_counts[i * interval_size] = 0
-
 # Sample list of numbers between 0 and 5
 
 # Count how many values appear for each interval

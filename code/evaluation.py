@@ -1,6 +1,10 @@
+"""
+:author Brian Verbanck
+:copyright: Copyright 2024 KU Leuven
+:license: Apache License, Version 2.0, see LICENSE for details.
+"""
+
 import numpy as np
-import math
-from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.optimize import linear_sum_assignment
@@ -68,7 +72,7 @@ class evaluation:
             for (start_d, end_d,_) in self.found_exercises:
                 overlap_length = max(0, min(end_d, end_gt) - max(start_d, start_gt))
                 if(overlap_length > 0):   
-                    overlap_matrix[index_gt, index_d] = overlap_length / (max(end_d, end_gt) - min(start_d, start_gt))
+                    overlap_matrix[index_gt, index_d] = 1 - (overlap_length / (max(end_d, end_gt) - min(start_d, start_gt)))
                 else:
                     overlap_matrix[index_gt, index_d] = 100
                 index_d +=1
@@ -115,12 +119,13 @@ class evaluation:
             confusion_matrix[label_gt, label_d] +=1
         
         for (row, col) in non_matched:
-            if(row < len(self.ground_truth)-1):
+
+            if(row <= len(self.ground_truth)-1):
                 (start,end,label_gt) = self.ground_truth[row]
                 label_gt = int(label_gt)
                 confusion_matrix[label_gt, 3] +=1
                 #print("missed prediction-> start:{} end:{} label:{}".format(start,end,label_gt))
-            if(col < len(self.found_exercises)-1):
+            if(col <= len(self.found_exercises)-1):
                 (start,end,label_d) = self.found_exercises[col]
                 confusion_matrix[3, label_d] += 1
                 #print("false prediciton-> start:{} end:{} label:{}".format(start,end,label_d))

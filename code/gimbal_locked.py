@@ -1,3 +1,9 @@
+"""
+:author Brian Verbanck
+:copyright: Copyright 2024 KU Leuven
+:license: Apache License, Version 2.0, see LICENSE for details.
+
+"""
 import loading as loader
 import orientation_simulation as orsim
 import matplotlib.pyplot as plt

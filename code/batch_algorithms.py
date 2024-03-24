@@ -1,3 +1,10 @@
+"""
+:author Brian Verbanck
+:copyright: Copyright 2024 KU Leuven
+:license: Apache License, Version 2.0, see LICENSE for details.
+
+"""
+
 import MTMM_DTW_run_batch as MTMM
 import MTW_DTW_run_batch as MTW
 import numpy as np
@@ -18,20 +25,12 @@ results_conf_MTMM = np.zeros((5,4,4), dtype=int)
 def run_each_exercise_and_subject():
     start_time = time.time()
     
-    for algorithm in range(0,1):
+    for algorithm in range(1,2):
         for subject in range(0, subjects):
             for exercise in range(0, exercises):
                 run_each_execution_setting(subject, exercise, 1, algorithm)
         
-        # Specify the file path for saving the array
-        file_path_MTMM = 'output_MTMM.npy'
-        file_path_MTW = 'output_MTW.npy'
-
-        # Save the 5D array to a binary file in NumPy format
-        np.save(file_path_MTMM, results_MTMM)
-        np.save(file_path_MTW, results_MTW)
-
-        
+    
     end_time = time.time()
     # Calculate the elapsed time
     elapsed_time = end_time - start_time
@@ -98,10 +97,9 @@ def print_results():
 def print_results_MTMM():
     for i in range (0,5):
         confusion_matrix = results_conf_MTMM[i]
-        print(confusion_matrix)
+        #print(confusion_matrix)
         EVAL = eval.evaluation(confusion_matrix)
-        EVAL.plot_simple_confusion_matrix(confusion_matrix)
-    results_MTMM = np.load("output_MTMM.npy", allow_pickle=True)
+        #EVAL.plot_simple_confusion_matrix(confusion_matrix)
     
     print("MTMM:")
     print("accuracy: " + str(np.mean(np.array([x[0] for x in np.ravel(results_MTMM)]))))
@@ -116,12 +114,13 @@ def print_results_MTW():
     
     for i in range (0,5):
         confusion_matrix = results_conf_MTW[i]
+        confusion_matrix *= 10
         EVAL = eval.evaluation(confusion_matrix)
         EVAL.plot_simple_confusion_matrix(confusion_matrix)
     
-    results_MTW = np.load("output_MTW.npy", allow_pickle=True)
     print("MTW:")
     print(results_conf_MTW)
+    
     print("accuracy: " + str(np.mean(np.array([x[0] for x in np.ravel(results_MTW)]))))
     print("missed prediction rate: " + str(np.mean(np.array([x[1] for x in np.ravel(results_MTW)]))))
     print("false prediciton rate: " + str(np.mean(np.array([x[2] for x in np.ravel(results_MTW)]))))

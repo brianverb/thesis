@@ -1,6 +1,11 @@
+"""
+:author Brian Verbanck
+:copyright: Copyright 2024 KU Leuven
+:license: Apache License, Version 2.0, see LICENSE for details.
+
+"""
+
 import numpy as np
-import os
-import matplotlib.pyplot as plt
 import pandas as pd
 import evaluation as eval
 import loading as loader
@@ -53,10 +58,8 @@ for i in range(results.shape[0]):
         EVALUATION.ground_truth = ground_truth
         EVALUATION.found_exercises = results[i,j]
 
-        conf = EVALUATION.create_confusion_matrix_with_assignmentproblem()
-        print(conf)
-        acc = EVALUATION.exercise_accuracy(conf)
-        print(acc)
+        MTW_DTW_EVAL = eval.evaluation(timeseries=time_series, templates=templates, ground_truth=ground_truth, found_exercises=EVALUATION.found_exercises)
+        acc, conf = MTW_DTW_EVAL.evaluate()
         results_acc[i,j] = acc
         
 print("Final acc: ")

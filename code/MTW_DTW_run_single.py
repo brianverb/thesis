@@ -1,3 +1,9 @@
+"""
+:author Brian Verbanck
+:copyright: Copyright 2024 KU Leuven
+:license: Apache License, Version 2.0, see LICENSE for details.
+
+"""
 import loading as loader
 import MTW_DTW as dtw
 import evaluation as eval
@@ -11,9 +17,9 @@ import os
 l = loader.Loading("code\data")
 l.load_all()
 subjects = l.time_series
-subject = 1
-exercise = 1
-sensor = 3
+subject = 0
+exercise = 6
+sensor = 1
 
 # get accelerometer data of first subject performing the second exercises using the second sensor
 templates, time_series = subjects[subject][exercise][sensor]
@@ -28,22 +34,29 @@ def apply_rotation(time_series, rotation_file):
 preprocessor = preproces.preprocessor(series=time_series, templates=templates)
 time_series = preprocessor.process()
 
-rotation_file_path = os.path.join("code/rotations", "no_rotation.npy")
+rotation_file_path = os.path.join("code/rotations", "rotation_gram_schmidt_5.npy")
+
+plt.plot(range(0,len(time_series)), time_series)
+# Add labels and title
+plt.xlabel('Time')
+plt.ylabel('Accel')
+plt.title('not rotated time-series')
+plt.show()
 
 time_series = apply_rotation(time_series=time_series, rotation_file=rotation_file_path)
 
-'''
+
 plt.plot(range(0,len(time_series)), time_series)
 # Add labels and title
 plt.xlabel('Time')
 plt.ylabel('Accel')
 plt.title('Rotated time-series')
 plt.show()
-'''
+
 
 #Use DTW to recognize every occurence of an exercise
-DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=30, max_matches=30,annotation_margin=0)
-found_exercises = DTW.find_exercises_max_distance(kabsch=True, steps=1)
+DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=20, max_matches=30)
+found_exercises = DTW.find_exercises_max_matches(kabsch=True, steps=1)
 
 #Load ground_truth
 ground_truth = loader.Loading.get_ground_truth_labels(self=l, subject=subject,exercise=exercise)

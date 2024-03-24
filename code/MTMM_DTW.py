@@ -1,3 +1,9 @@
+"""
+:author Brian Verbanck
+:copyright: Copyright 2024 KU Leuven
+:license: Apache License, Version 2.0, see LICENSE for details.
+
+"""
 import matplotlib.pyplot as plt
 from dtaidistance.subsequence.dtw import subsequence_alignment
 from dtaidistance import dtw_visualisation as dtwvis
