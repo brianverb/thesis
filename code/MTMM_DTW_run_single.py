@@ -21,8 +21,8 @@ l = loader.Loading("code\data")
 l.load_all()
 subjects = l.time_series
 scaling = False
-subject = 0
-exercise = 6
+subject = 2
+exercise = 0
 sensor = 1
 
 # get accelerometer data of first subject performing the second exercises using the second sensor
@@ -34,15 +34,33 @@ def apply_rotation(time_series, rotation_file):
 
     rotated_series = simulation.apply_rotation(series=time_series, rotation_matrix=rotation_matrix)
     return rotated_series 
+plt.plot(range(0,len(time_series)), time_series)
+# Add labels and title
+plt.xlabel('Time')
+plt.ylabel('Accel')
+plt.title('Rotated time-series')
+plt.show()
 
-rotation_file_path = os.path.join("code/rotations", "rotation_gram_schmidt_5.npy")
+rotation_file_path = os.path.join("code/rotations", "no_rotation.npy")
 time_series = apply_rotation(time_series=time_series, rotation_file=rotation_file_path)
+plt.plot(range(0,len(time_series)), time_series)
+# Add labels and title
+plt.xlabel('Time')
+plt.ylabel('Accel')
+plt.title('Rotated time-series')
+plt.show()
 
 preprocessor = preproces.preprocessor(series=time_series, templates=templates)
 time_series = preprocessor.process()
+plt.plot(range(0,len(time_series)), time_series)
+# Add labels and title
+plt.xlabel('Time')
+plt.ylabel('Accel')
+plt.title('Rotated time-series')
+plt.show()
 
 #Use DTW to recognize every occurence of an exercise
-found_exercises = MTMMM.find_exercises(templates,time_series=time_series, kabsch=True, max_iterations=1000, max_iterations_bad_match = 500, min_segment_length=0.5)
+found_exercises = MTMMM.find_exercises(templates,time_series=time_series, kabsch=True, min_segment_length=0.5, max_distance=1)
 print(found_exercises)
 
 #Load ground_truth

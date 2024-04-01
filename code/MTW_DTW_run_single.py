@@ -17,12 +17,20 @@ import os
 l = loader.Loading("code\data")
 l.load_all()
 subjects = l.time_series
-subject = 0
-exercise = 6
+subject = 2
+exercise = 0
 sensor = 1
 
 # get accelerometer data of first subject performing the second exercises using the second sensor
 templates, time_series = subjects[subject][exercise][sensor]
+
+plt.plot(range(0,len(time_series)), time_series)
+# Add labels and title
+plt.xlabel('Time')
+plt.ylabel('Accel')
+plt.title('not rotated time-series')
+plt.show()
+
 
 def apply_rotation(time_series, rotation_file):
     simulation = orsim.orientation_simulation()
@@ -30,9 +38,6 @@ def apply_rotation(time_series, rotation_file):
 
     rotated_series = simulation.apply_rotation(series=time_series, rotation_matrix=rotation_matrix)
     return rotated_series 
-
-preprocessor = preproces.preprocessor(series=time_series, templates=templates)
-time_series = preprocessor.process()
 
 rotation_file_path = os.path.join("code/rotations", "rotation_gram_schmidt_5.npy")
 
@@ -45,6 +50,8 @@ plt.show()
 
 time_series = apply_rotation(time_series=time_series, rotation_file=rotation_file_path)
 
+preprocessor = preproces.preprocessor(series=time_series, templates=templates)
+time_series = preprocessor.process()
 
 plt.plot(range(0,len(time_series)), time_series)
 # Add labels and title

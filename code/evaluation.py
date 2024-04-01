@@ -107,6 +107,13 @@ class evaluation:
                 not_matched.append((row,col))
         return matched, not_matched
     
+    def increment_value_in_file(self, file_path, value):
+        array = np.load(file_path, allow_pickle=True)
+        array = array.tolist()  
+        array.append(value)
+        array = np.array(array)
+        np.save(file_path, array)
+        
     def evaluate(self):
         overlap_matrix = self.overlap_matrix()
         matched, non_matched = self.match_overlaps(overlap_matrix)
@@ -115,9 +122,17 @@ class evaluation:
         for (row, col) in matched:
             (_,_,label_gt) = self.ground_truth[row]
             label_gt = int(label_gt)
-            (_,_,label_d) = self.found_exercises[col]
+            (start,end,label_d) = self.found_exercises[col]
             confusion_matrix[label_gt, label_d] +=1
-        
+            '''
+            length = (end-start)
+            if(label_d == label_gt):
+                self.increment_value_in_file("correct.npy",length)
+            else:
+                self.increment_value_in_file("miss.npy", length)
+            '''
+
+
         for (row, col) in non_matched:
 
             if(row <= len(self.ground_truth)-1):
@@ -128,7 +143,9 @@ class evaluation:
             if(col <= len(self.found_exercises)-1):
                 (start,end,label_d) = self.found_exercises[col]
                 confusion_matrix[3, label_d] += 1
+                length = (end-start)
                 #print("false prediciton-> start:{} end:{} label:{}".format(start,end,label_d))
+                #self.increment_value_in_file("false.npy", length)
         
         accuracy = self.calculate_accuracy(conf=confusion_matrix)
         return accuracy, confusion_matrix

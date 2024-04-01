@@ -19,8 +19,10 @@ def run(subject, exercise, unit, rotation_file, kabsch):
     
     preprocessor = prep.preprocessor(series=time_series, templates=templates)
     time_series = preprocessor.process()
-    
-    found_exercises = MTMMM.find_exercises(templates,time_series=time_series, kabsch=kabsch, max_iterations=1000, max_iterations_bad_match = 500, min_segment_length=0.5)
+    if kabsch:
+        found_exercises = MTMMM.find_exercises(templates,time_series=time_series, kabsch=kabsch, min_segment_length=0.5, max_distance=1)
+    else:
+        found_exercises = MTMMM.find_exercises(templates,time_series=time_series, kabsch=kabsch, min_segment_length=0.7, max_distance=0.9)
 
     accuracy, conf, amount_of_expected_exercises = evaluate_time_series(time_series=time_series, templates=templates, found_exercises=found_exercises, ground_truth=ground_truth)
     
@@ -42,7 +44,7 @@ def apply_rotation(time_series, rotation_file):
 
     rotated_series = simulation.apply_rotation(series=time_series, rotation_matrix=rotation_matrix)
     return rotated_series 
-    
+     
 def evaluate_time_series(time_series, templates, ground_truth, found_exercises): 
     EVAL = eval.evaluation(timeseries=time_series, templates=templates, ground_truth=ground_truth, found_exercises=found_exercises)
     acc, conf = EVAL.evaluate()

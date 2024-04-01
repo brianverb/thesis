@@ -28,7 +28,7 @@ class orientation_simulation:
     def _plot_2d_arrows(self, vs, plot_ix):
         # Plot arrows for the first 1000 or so, projected in 2d
         ax = plt.subplot(1, 3, plot_ix)
-        ax.set_title('100 vecs plotted in 3D')
+        ax.set_title('3 vecs plotted in 3D')
         
         ax.set_aspect('equal', adjustable='box')
         plt.xlim(-1.1, 1.1)
@@ -46,7 +46,7 @@ class orientation_simulation:
     def _plot_3d_points(self, vs, plot_ix):
         # Plot the points on a sphere.
         ax = plt.subplot(1, 3, plot_ix, projection='3d')
-        ax.set_title('300 pts shown on a sphere')
+        ax.set_title('3 pts shown on a sphere')
 
         # Plot a sphere
         phi, theta = np.mgrid[0.0:np.pi:100j, 0.0:2.0*np.pi:100j]

@@ -38,10 +38,12 @@ class dtw_windowed:
             for i in range(0,self.timeseries_length-template_length, steps):
                 window = self.series[i:i+template_length]
                 if(k):
-                    _, R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), self.scaling)
-                    window = np.dot(R, window.T).T
-                    window = np.array(window)
- 
+                    already_masked = np.any(np.isnan(window)) or np.any(np.isinf(window))
+                    if(not already_masked):
+                        _, R, _ = kabsch.rigid_transform_3D(np.matrix(template), np.matrix(window), self.scaling)
+                        window = np.dot(R, window.T).T
+                        window = np.array(window)
+    
                 #distance = dtw_ndim.distance(window, template, penalty=10, window=(template_length//10)*2, max_dist=30,use_c=True)
                 distance = dtw_ndim.distance(window, template, use_c=True)
                 distance *= distance

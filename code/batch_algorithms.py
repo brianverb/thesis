@@ -19,13 +19,14 @@ rotations = os.listdir(rotations_directory)
 subjects = 5
 exercises = 8
 results_MTMM = np.zeros((subjects, exercises, len(rotations), len(kabsch)), dtype=object)
+results_MTMM_accs = np.zeros((subjects, exercises, len(rotations)), dtype=object)
 results_MTW = np.zeros((subjects, exercises, len(rotations), len(kabsch)), dtype=object)
 results_conf_MTW = np.zeros((5,4,4), dtype=int)
 results_conf_MTMM = np.zeros((5,4,4), dtype=int)
 def run_each_exercise_and_subject():
     start_time = time.time()
     
-    for algorithm in range(1,2):
+    for algorithm in range(0,1):
         for subject in range(0, subjects):
             for exercise in range(0, exercises):
                 run_each_execution_setting(subject, exercise, 1, algorithm)
@@ -87,19 +88,39 @@ def add_result_tuple(results, results_confs, subject, exercise, rotation_index, 
             results_confs[subject,i,j] += int(conf[i,j])
     #print(f"mp: {mp}, fp: {fp}, correct: {correct}, mc: {mc}, total: {total}, expected amount: {amount_exercises}")
     # Accuracy, missed prediction rate, false prediction rate, miss classified rate, total found exercises, expected exercises
-    results[subject,exercise,rotation_index, kabsch_index] = (correct/total, mp/amount_exercises, fp/(total-mp), mc/(total-mp), total-mp, amount_exercises)
+    if(fp > 0):
+        new_fp = fp/(total-mp)
+    else:
+        new_fp = 0
+    if(mc == 0):
+        new_mc = 0
+    else:
+        new_mc = mc/(total-mp)
+    results_MTMM_accs[subject,exercise,rotation_index] = correct/total
+    results[subject,exercise,rotation_index, kabsch_index] = (correct/total, mp/amount_exercises, new_fp, new_mc, total-mp, amount_exercises)
 
 def print_results():
-    print_results_MTW()
-    #print_results_MTMM()
+    #print_results_MTW()
+    print_results_MTMM()
     
 
 def print_results_MTMM():
     for i in range (0,5):
         confusion_matrix = results_conf_MTMM[i]
-        #print(confusion_matrix)
+        print(confusion_matrix)
         EVAL = eval.evaluation(confusion_matrix)
-        #EVAL.plot_simple_confusion_matrix(confusion_matrix)
+        EVAL.plot_simple_confusion_matrix(confusion_matrix)
+    
+    std_dev_per_third_dim = np.std(results_MTMM_accs, axis=2, dtype=np.float64)
+    print(std_dev_per_third_dim)
+    # Convert the NumPy array to a pandas DataFrame
+    df = pd.DataFrame(std_dev_per_third_dim)
+
+    # Define the filename for the Excel file
+    excel_filename = 'std_dev_regular.xlsx'
+
+    # Write the DataFrame to an Excel file
+    df.to_excel(excel_filename, index=False)
     
     print("MTMM:")
     print("accuracy: " + str(np.mean(np.array([x[0] for x in np.ravel(results_MTMM)]))))
@@ -111,13 +132,13 @@ def print_results_MTMM():
     print("__________________________________________________________________________________________________")
     
 def print_results_MTW():
-    
+    '''
     for i in range (0,5):
         confusion_matrix = results_conf_MTW[i]
         confusion_matrix *= 10
         EVAL = eval.evaluation(confusion_matrix)
         EVAL.plot_simple_confusion_matrix(confusion_matrix)
-    
+    '''
     print("MTW:")
     print(results_conf_MTW)
     

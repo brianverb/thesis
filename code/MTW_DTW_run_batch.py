@@ -46,7 +46,7 @@ def apply_rotation(time_series, rotation_file):
 def mtw_dtw(time_series, templates, kabsch):
     #Use DTW to recognize every occurence of an exercise
     DTW = dtw.dtw_windowed(series=time_series, templates=templates, scaling=False, max_distance=17.5, max_matches=30)
-    found_exercises = DTW.find_exercises_max_distance(kabsch=kabsch, steps=1)
+    found_exercises = DTW.find_exercises_max_matches(kabsch=kabsch, steps=5)
     
     return found_exercises
 
